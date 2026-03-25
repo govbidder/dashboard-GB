@@ -1,0 +1,15 @@
+{
+  "name": "govbidder-command-center",
+  "version": "1.0.0",
+  "description": "GovBidder Command Center - Dashboard de inteligencia gubernamental",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
