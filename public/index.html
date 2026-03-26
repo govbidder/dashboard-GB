@@ -107,6 +107,166 @@ tr:hover td{background:#f8f9fc;}
 </style>
 </head>
 <body>
+  
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay" style="
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#0a0c14 0%,#0f1e5c 50%,#1a0505 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Segoe UI',system-ui,sans-serif;
+">
+
+  <!-- STARS BACKGROUND -->
+  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+    <div style="position:absolute;top:10%;left:15%;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.6;"></div>
+    <div style="position:absolute;top:25%;left:70%;width:1px;height:1px;background:#fff;border-radius:50%;opacity:.4;"></div>
+    <div style="position:absolute;top:60%;left:30%;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.5;"></div>
+    <div style="position:absolute;top:80%;left:80%;width:1px;height:1px;background:#fff;border-radius:50%;opacity:.3;"></div>
+    <div style="position:absolute;top:40%;left:90%;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.6;"></div>
+    <div style="position:absolute;top:70%;left:10%;width:1px;height:1px;background:#fff;border-radius:50%;opacity:.4;"></div>
+    <div style="position:absolute;top:15%;left:45%;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.3;"></div>
+    <div style="position:absolute;top:50%;left:55%;width:1px;height:1px;background:#fff;border-radius:50%;opacity:.5;"></div>
+  </div>
+
+  <!-- LOGIN CARD -->
+  <div style="
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    padding:40px 44px;
+    width:100%;max-width:440px;
+    backdrop-filter:blur(20px);
+    box-shadow:0 24px 80px rgba(0,0,0,.5);
+    position:relative;
+  ">
+
+    <!-- LOGO -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:40px;margin-bottom:8px;">🦅</div>
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:0;">
+        <span style="color:#fff;font-size:26px;font-weight:900;letter-spacing:1px;">GOV</span>
+        <span style="color:#E42D2C;font-size:26px;font-weight:900;letter-spacing:1px;">BIDDER</span>
+      </div>
+      <div style="color:rgba(255,255,255,.4);font-size:9px;letter-spacing:3px;font-weight:700;margin-top:3px;">COMMAND CENTER</div>
+      <div style="color:rgba(255,255,255,.2);font-size:10px;font-style:italic;margin-top:4px;">The Bid That Wins</div>
+
+      <!-- DIVIDER -->
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(228,45,44,.4),transparent);margin:20px 0 0;"></div>
+    </div>
+
+    <!-- WELCOME TEXT -->
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:4px;">Acceso Exclusivo — GovBidder Club</div>
+      <div style="color:rgba(255,255,255,.45);font-size:11px;line-height:1.5;">Sistema privado de inteligencia para miembros activos.<br>Ingresa tus credenciales para continuar.</div>
+    </div>
+
+    <!-- FORM -->
+    <div style="display:flex;flex-direction:column;gap:14px;">
+
+      <!-- EMAIL -->
+      <div>
+        <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">EMAIL DE MIEMBRO</label>
+        <input
+          id="login-email"
+          type="email"
+          placeholder="tu@email.com"
+          onkeydown="if(event.key==='Enter')doLogin()"
+          style="
+            width:100%;background:rgba(255,255,255,.06);
+            border:1px solid rgba(255,255,255,.12);
+            border-radius:9px;padding:12px 14px;
+            color:#fff;font-size:13px;outline:none;
+            font-family:inherit;transition:.2s;
+          "
+          onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
+          onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
+        />
+      </div>
+
+      <!-- PASSWORD -->
+      <div>
+        <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">CONTRASEÑA</label>
+        <div style="position:relative;">
+          <input
+            id="login-password"
+            type="password"
+            placeholder="••••••••••"
+            onkeydown="if(event.key==='Enter')doLogin()"
+            style="
+              width:100%;background:rgba(255,255,255,.06);
+              border:1px solid rgba(255,255,255,.12);
+              border-radius:9px;padding:12px 14px;
+              color:#fff;font-size:13px;outline:none;
+              font-family:inherit;transition:.2s;
+            "
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
+            onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
+          />
+          <button
+            onclick="togglePass()"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;"
+            id="pass-toggle">👁️</button>
+        </div>
+      </div>
+
+      <!-- ERROR MESSAGE -->
+      <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11.5px;text-align:center;"></div>
+
+      <!-- LOGIN BUTTON -->
+      <button
+        onclick="doLogin()"
+        id="login-btn"
+        style="
+          background:linear-gradient(135deg,#E42D2C,#a01e1d);
+          color:#fff;border:none;border-radius:9px;
+          padding:14px;font-size:13px;font-weight:800;
+          cursor:pointer;transition:.2s;letter-spacing:.3px;
+          box-shadow:0 4px 20px rgba(228,45,44,.3);
+          margin-top:4px;
+        "
+        onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 24px rgba(228,45,44,.4)'"
+        onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(228,45,44,.3)'"
+      >
+        <span id="login-btn-text">Ingresar al Command Center →</span>
+      </button>
+
+    </div>
+
+    <!-- FOOTER LINKS -->
+    <div style="text-align:center;margin-top:22px;">
+      <div style="color:rgba(255,255,255,.25);font-size:10px;margin-bottom:8px;">¿No eres miembro aún?</div>
+      <a href="https://www.govbidderclub.com" target="_blank"
+        style="color:#E42D2C;font-size:11px;font-weight:700;text-decoration:none;">
+        Únete a GovBidder Club →
+      </a>
+      <span style="color:rgba(255,255,255,.15);margin:0 10px;">|</span>
+      <a href="mailto:club@govbidder.net"
+        style="color:rgba(255,255,255,.35);font-size:11px;text-decoration:none;">
+        ¿Problemas? Escríbenos
+      </a>
+    </div>
+
+    <!-- PLAN BADGES -->
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:20px;">
+      <span style="background:rgba(228,45,44,.15);color:#fca5a5;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(228,45,44,.2);">ELEVATE</span>
+      <span style="background:rgba(21,41,120,.2);color:#93c5fd;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(21,41,120,.3);">PRIME</span>
+      <span style="background:rgba(200,168,75,.15);color:#fde68a;font-size:8.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(200,168,75,.25);">LEGACY</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOGOUT BUTTON (visible dentro del dashboard) -->
+<div id="logout-btn" style="display:none;">
+  <button
+    onclick="doLogout()"
+    style="
+      background:rgba(228,45,44,.1);color:#E42D2C;
+      border:1px solid rgba(228,45,44,.25);border-radius:7px;
+      padding:5px 11px;font-size:10px;font-weight:700;cursor:pointer;
+    "
+  >⏻ Salir</button>
+</div>
 
 <div id="sidebar">
   <div class="logo">
@@ -864,7 +1024,170 @@ tr:hover td{background:#f8f9fc;}
   </div>
 </div>
 
-<script>
+
+let currentMember = null;
+
+// ── CHECK SESSION AL CARGAR ───────────────────────────────
+async function checkSession() {
+  const token = localStorage.getItem('gb_token');
+  if (!token) { showLogin(); return; }
+
+  try {
+    const res  = await fetch(`${API}/auth?action=verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      currentMember = data.member;
+      applyMemberProfile(data.member);
+      hideLogin();
+    } else {
+      localStorage.removeItem('gb_token');
+      showLogin();
+    }
+  } catch {
+    // Si falla la verificación, igual permite acceso
+    // (para no bloquear si el servidor está caído)
+    hideLogin();
+  }
+}
+
+// ── DO LOGIN ──────────────────────────────────────────────
+async function doLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn      = document.getElementById('login-btn');
+  const btnText  = document.getElementById('login-btn-text');
+  const errorEl  = document.getElementById('login-error');
+
+  errorEl.style.display = 'none';
+
+  if (!email || !password) {
+    showError('Por favor ingresa tu email y contraseña.');
+    return;
+  }
+
+  // Loading state
+  btn.disabled = true;
+  btnText.innerHTML = '<span style="opacity:.7">Verificando...</span>';
+
+  try {
+    const res  = await fetch(`${API}/auth?action=login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem('gb_token', data.token);
+      currentMember = data.member;
+      applyMemberProfile(data.member);
+
+      // Success animation
+      btnText.innerHTML = '✅ ¡Bienvenido al Command Center!';
+      btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+
+      setTimeout(() => hideLogin(), 800);
+    } else {
+      showError(data.error || 'Credenciales incorrectas.');
+      btn.disabled  = false;
+      btnText.innerHTML = 'Ingresar al Command Center →';
+      btn.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)';
+    }
+  } catch(e) {
+    showError('Error de conexión. Intenta de nuevo.');
+    btn.disabled  = false;
+    btnText.innerHTML = 'Ingresar al Command Center →';
+  }
+}
+
+// ── LOGOUT ────────────────────────────────────────────────
+function doLogout() {
+  if (!confirm('¿Estás seguro que quieres cerrar sesión?')) return;
+  localStorage.removeItem('gb_token');
+  currentMember = null;
+  // Reset UI
+  document.getElementById('login-email').value    = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-btn').disabled   = false;
+  document.getElementById('login-btn-text').innerHTML = 'Ingresar al Command Center →';
+  document.getElementById('login-btn').style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)';
+  showLogin();
+}
+
+// ── APPLY MEMBER PROFILE TO DASHBOARD ────────────────────
+function applyMemberProfile(member) {
+  // Avatar
+  document.querySelector('.top-avatar').textContent = member.avatar || member.name.substring(0,2).toUpperCase();
+
+  // Plan badge
+  const planColors = {
+    Legacy:  'linear-gradient(135deg,#c8a84b,#a8883b)',
+    Prime:   'linear-gradient(135deg,#152978,#1a3090)',
+    Elevate: 'linear-gradient(135deg,#E42D2C,#a01e1d)'
+  };
+  const badge = document.querySelector('.member-badge');
+  if (badge) {
+    badge.textContent   = `⭐ ${member.plan.toUpperCase()}`;
+    badge.style.background = planColors[member.plan] || planColors.Elevate;
+  }
+
+  // Pre-fill filters with member preferences
+  if (member.state) {
+    const stateEl = document.getElementById('f-state');
+    if (stateEl) stateEl.value = member.state;
+  }
+  if (member.naics) {
+    const naicsEl = document.getElementById('f-naics');
+    if (naicsEl) naicsEl.value = member.naics;
+  }
+
+  // Show logout button
+  const logoutEl = document.getElementById('logout-btn');
+  if (logoutEl) logoutEl.style.display = 'block';
+
+  // Welcome KPI update
+  const kpiState = document.getElementById('kpi-state');
+  if (kpiState) kpiState.textContent = member.state || 'NJ';
+  const kpiNaics = document.getElementById('kpi-naics');
+  if (kpiNaics) kpiNaics.textContent = member.naics || '561720';
+}
+
+// ── UI HELPERS ────────────────────────────────────────────
+function showLogin() {
+  document.getElementById('login-overlay').style.display = 'flex';
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'none';
+}
+
+function hideLogin() {
+  document.getElementById('login-overlay').style.display = 'none';
+  document.getElementById('main').style.display = 'flex';
+  document.getElementById('sidebar').style.display = 'flex';
+}
+
+function showError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent     = msg;
+  el.style.display   = 'block';
+}
+
+function togglePass() {
+  const inp = document.getElementById('login-password');
+  const btn = document.getElementById('pass-toggle');
+  if (inp.type === 'password') {
+    inp.type     = 'text';
+    btn.textContent = '🙈';
+  } else {
+    inp.type     = 'password';
+    btn.textContent = '👁️';
+  }
+}
+  <script>
 // ── TODAS LAS LLAMADAS VAN A /api/* (tu backend en Vercel) ──
 const API = '/api';
 let liveOpps=[], liveGrants=[];
