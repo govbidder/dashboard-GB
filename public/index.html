@@ -207,15 +207,156 @@ tr:hover td{background:#f8f9fc;}
   </optgroup>
 </select>
       <select class="gf-select" id="f-naics">
-        <option value="561720" selected>NAICS 561720</option>
-        <option value="541519">NAICS 541519</option>
-        <option value="236220">NAICS 236220</option>
-        <option value="561110">NAICS 561110</option>
-      </select>
-      <select class="gf-select" id="f-year">
-        <option value="2024" selected>2024</option>
-        <option value="2023">2023</option>
-      </select>
+ <div style="position:relative;">
+  <input
+    id="f-naics"
+    class="gf-select"
+    style="width:200px;cursor:text;"
+    placeholder="NAICS code o keyword..."
+    value="561720"
+    list="naics-suggestions"
+    onchange="onGlobalFilter()"
+    oninput="onGlobalFilter()"
+  />
+  <datalist id="naics-suggestions">
+    <!-- Sector 11 - Agriculture -->
+    <option value="111110">111110 - Soybean Farming</option>
+    <option value="112111">112111 - Beef Cattle Ranching</option>
+    <option value="112120">112120 - Dairy Cattle & Milk Production</option>
+    <!-- Sector 21 - Mining -->
+    <option value="211120">211120 - Crude Petroleum Extraction</option>
+    <option value="212111">212111 - Bituminous Coal Mining</option>
+    <!-- Sector 22 - Utilities -->
+    <option value="221111">221111 - Hydroelectric Power Generation</option>
+    <option value="221114">221114 - Solar Electric Power Generation</option>
+    <option value="221210">221210 - Natural Gas Distribution</option>
+    <option value="221310">221310 - Water Supply & Irrigation</option>
+    <option value="221320">221320 - Sewage Treatment Facilities</option>
+    <!-- Sector 23 - Construction -->
+    <option value="236115">236115 - New Single-Family Housing Construction</option>
+    <option value="236116">236116 - New Multifamily Housing Construction</option>
+    <option value="236210">236210 - Industrial Building Construction</option>
+    <option value="236220">236220 - Commercial & Institutional Building Construction</option>
+    <option value="237110">237110 - Water & Sewer Line Construction</option>
+    <option value="237310">237310 - Highway, Street & Bridge Construction</option>
+    <option value="238110">238110 - Poured Concrete Contractors</option>
+    <option value="238210">238210 - Electrical Contractors</option>
+    <option value="238220">238220 - Plumbing, Heating & AC Contractors</option>
+    <option value="238310">238310 - Drywall & Insulation Contractors</option>
+    <option value="238320">238320 - Painting & Wall Covering Contractors</option>
+    <option value="238330">238330 - Flooring Contractors</option>
+    <option value="238910">238910 - Site Preparation Contractors</option>
+    <option value="238990">238990 - All Other Specialty Trade Contractors</option>
+    <!-- Sector 44-45 - Retail -->
+    <option value="444110">444110 - Home Centers</option>
+    <option value="453210">453210 - Office Supplies & Stationery Stores</option>
+    <!-- Sector 48-49 - Transportation -->
+    <option value="481111">481111 - Scheduled Passenger Air Transportation</option>
+    <option value="484110">484110 - General Freight Trucking Local</option>
+    <option value="484121">484121 - General Freight Trucking Long-Distance</option>
+    <option value="485410">485410 - School & Employee Bus Transportation</option>
+    <option value="488111">488111 - Air Traffic Control</option>
+    <option value="492110">492110 - Couriers & Express Delivery</option>
+    <option value="493110">493110 - General Warehousing & Storage</option>
+    <!-- Sector 51 - Information -->
+    <option value="511210">511210 - Software Publishers</option>
+    <option value="517111">517111 - Wired Telecommunications Carriers</option>
+    <option value="517112">517112 - Wireless Telecommunications Carriers</option>
+    <option value="518210">518210 - Data Processing & Hosting Services</option>
+    <option value="519130">519130 - Internet Publishing & Web Search Portals</option>
+    <!-- Sector 54 - Professional Services -->
+    <option value="541110">541110 - Offices of Lawyers</option>
+    <option value="541211">541211 - Offices of Certified Public Accountants</option>
+    <option value="541310">541310 - Architectural Services</option>
+    <option value="541330">541330 - Engineering Services</option>
+    <option value="541380">541380 - Testing Laboratories</option>
+    <option value="541430">541430 - Graphic Design Services</option>
+    <option value="541511">541511 - Custom Computer Programming Services</option>
+    <option value="541512">541512 - Computer Systems Design Services</option>
+    <option value="541519">541519 - Other Computer Related Services</option>
+    <option value="541611">541611 - Administrative Management Consulting</option>
+    <option value="541612">541612 - Human Resources Consulting</option>
+    <option value="541613">541613 - Marketing Consulting</option>
+    <option value="541620">541620 - Environmental Consulting</option>
+    <option value="541712">541712 - R&D Physical Engineering & Life Sciences</option>
+    <option value="541810">541810 - Advertising Agencies</option>
+    <option value="541820">541820 - Public Relations Agencies</option>
+    <option value="541930">541930 - Translation & Interpretation Services</option>
+    <!-- Sector 56 - Administrative Services ★ KEY FOR GOVBIDDER -->
+    <option value="561110">561110 - Office Administrative Services</option>
+    <option value="561210">561210 - Facilities Support Services</option>
+    <option value="561311">561311 - Employment Placement Agencies</option>
+    <option value="561320">561320 - Temporary Help Services</option>
+    <option value="561410">561410 - Document Preparation Services</option>
+    <option value="561421">561421 - Telephone Answering Services</option>
+    <option value="561422">561422 - Telemarketing & Contact Centers</option>
+    <option value="561499">561499 - All Other Business Support Services</option>
+    <option value="561510">561510 - Travel Agencies</option>
+    <option value="561612">561612 - Security Guards & Patrol Services</option>
+    <option value="561621">561621 - Security Systems Services</option>
+    <option value="561710">561710 - Exterminating & Pest Control Services</option>
+    <option value="561720">561720 - Janitorial Services</option>
+    <option value="561730">561730 - Landscaping Services</option>
+    <option value="561740">561740 - Carpet & Upholstery Cleaning</option>
+    <option value="561790">561790 - Other Services to Buildings & Dwellings</option>
+    <option value="561910">561910 - Packaging & Labeling Services</option>
+    <option value="562111">562111 - Solid Waste Collection</option>
+    <option value="562119">562119 - Other Waste Collection</option>
+    <option value="562211">562211 - Hazardous Waste Treatment & Disposal</option>
+    <option value="562910">562910 - Remediation Services</option>
+    <!-- Sector 61 - Education -->
+    <option value="611110">611110 - Elementary & Secondary Schools</option>
+    <option value="611210">611210 - Junior Colleges</option>
+    <option value="611310">611310 - Colleges, Universities & Professional Schools</option>
+    <option value="611420">611420 - Computer Training</option>
+    <option value="611430">611430 - Professional & Management Development Training</option>
+    <option value="611519">611519 - Other Technical & Trade Schools</option>
+    <option value="611630">611630 - Language Schools</option>
+    <!-- Sector 62 - Health Care -->
+    <option value="621111">621111 - Offices of Physicians</option>
+    <option value="621210">621210 - Offices of Dentists</option>
+    <option value="621340">621340 - Physical, Occupational & Speech Therapists</option>
+    <option value="621498">621498 - All Other Outpatient Care Centers</option>
+    <option value="621511">621511 - Medical Laboratories</option>
+    <option value="621610">621610 - Home Health Care Services</option>
+    <option value="621910">621910 - Ambulance Services</option>
+    <option value="622110">622110 - General Medical & Surgical Hospitals</option>
+    <option value="624110">624110 - Child & Youth Services</option>
+    <option value="624410">624410 - Child Day Care Services</option>
+    <!-- Sector 72 - Hospitality -->
+    <option value="721110">721110 - Hotels & Motels</option>
+    <option value="722310">722310 - Food Service Contractors</option>
+    <option value="722320">722320 - Caterers</option>
+    <option value="722511">722511 - Full-Service Restaurants</option>
+    <option value="722513">722513 - Limited-Service Restaurants</option>
+    <!-- Sector 81 - Other Services -->
+    <option value="811111">811111 - General Automotive Repair</option>
+    <option value="811192">811192 - Car Washes</option>
+    <option value="811210">811210 - Electronic Equipment Repair</option>
+    <option value="811310">811310 - Commercial Machinery Repair & Maintenance</option>
+    <option value="812111">812111 - Barber Shops</option>
+    <option value="812112">812112 - Beauty Salons</option>
+    <option value="812320">812320 - Drycleaning & Laundry Services</option>
+    <option value="812910">812910 - Pet Care Services</option>
+    <!-- Sector 92 - Public Administration -->
+    <option value="921110">921110 - Executive Offices</option>
+    <option value="922120">922120 - Police Protection</option>
+    <option value="922160">922160 - Fire Protection</option>
+    <option value="923110">923110 - Administration of Education Programs</option>
+    <option value="923120">923120 - Administration of Public Health Programs</option>
+  </datalist>
+</div>
+
+<!-- YEAR — 2020 al 2026 -->
+<select class="gf-select" id="f-year">
+  <option value="2026">2026</option>
+  <option value="2025">2025</option>
+  <option value="2024" selected>2024</option>
+  <option value="2023">2023</option>
+  <option value="2022">2022</option>
+  <option value="2021">2021</option>
+  <option value="2020">2020</option>
+</select>
       <a href="https://app.govbidder.net/" target="_blank" class="crm-btn">⚡ GovBidder App</a>
       <div class="member-badge">⭐ LEGACY</div>
       <div class="top-avatar">JR</div>
