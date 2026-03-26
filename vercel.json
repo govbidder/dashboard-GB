@@ -1,3 +1,4 @@
+
 {
   "version": 2,
   "builds": [
@@ -12,21 +13,21 @@
   ],
   "rewrites": [
     { "source": "/api/opportunities", "destination": "/api/opportunities.js" },
-    { "source": "/api/grants",        "destination": "/api/grants.js" },
-    { "source": "/api/spending",      "destination": "/api/spending.js" },
-    { "source": "/api/ai",            "destination": "/api/ai.js" },
-    { "source": "/api/codes",         "destination": "/api/codes.js" },
-    { "source": "/api/geography",     "destination": "/api/geography.js" },
-    { "source": "/api/auth",          "destination": "/api/auth.js" },
-    { "source": "/((?!api/).*)",      "destination": "/public/index.html" }
+    { "source": "/api/grants",        "destination": "/api/grants.js"        },
+    { "source": "/api/spending",      "destination": "/api/spending.js"      },
+    { "source": "/api/ai",            "destination": "/api/ai.js"            },
+    { "source": "/api/codes",         "destination": "/api/codes.js"         },
+    { "source": "/api/geography",     "destination": "/api/geography.js"     },
+    { "source": "/api/auth",          "destination": "/api/auth.js"          },
+    { "source": "/((?!api/).*)",      "destination": "/public/index.html"    }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin",  "value": "*" },
+        { "key": "Access-Control-Allow-Origin",  "value": "*"                },
         { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type"     }
       ]
     }
   ]
