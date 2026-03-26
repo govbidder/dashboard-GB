@@ -1232,73 +1232,138 @@ async function checkSession() {
   }
 }
 
-// ── DO LOGIN ──────────────────────────────────────────────
+// ── DO LOGIN — reemplaza la función doLogin() completa ────
 async function doLogin() {
-  const emailEl    = document.getElementById('login-email');
-  const passwordEl = document.getElementById('login-password');
-  const btn        = document.getElementById('login-btn');
-  const btnText    = document.getElementById('login-btn-text');
-  const errorEl    = document.getElementById('login-error');
+  const email    = (document.getElementById('login-email')?.value    || '').trim();
+  const password = (document.getElementById('login-password')?.value || '').trim();
+  const btn      = document.getElementById('login-btn');
+  const btnText  = document.getElementById('login-btn-text');
+  const errorEl  = document.getElementById('login-error');
 
-  const email    = (emailEl?.value    || '').trim();
-  const password = (passwordEl?.value || '').trim();
-
-  // Clear error
+  // Limpia error
   if (errorEl) errorEl.style.display = 'none';
 
+  // Validación
   if (!email || !password) {
-    showLoginError('Por favor ingresa tu email y contraseña.');
+    if (errorEl) {
+      errorEl.textContent  = 'Ingresa tu email y contraseña.';
+      errorEl.style.display = 'block';
+    }
     return;
   }
 
-  // Loading state
+  // Loading
   if (btn)     btn.disabled = true;
   if (btnText) btnText.innerHTML = 'Verificando...';
 
   try {
-    const res = await fetch(`${API}/auth?action=login`, {
-      method: 'POST',
+    const res  = await fetch('/api/auth?action=login', {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body:    JSON.stringify({ email, password })
     });
 
-    // Intenta parsear aunque el status sea error
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      throw new Error(`Error del servidor (HTTP ${res.status})`);
-    }
+    const data = await res.json();
 
     if (data.success) {
-      // Guarda token
       localStorage.setItem('gb_token', data.token);
       currentMember = data.member;
       applyMemberProfile(data.member);
-
-      // Success UI
-      if (btnText) btnText.innerHTML = '✅ ¡Bienvenido!';
-      if (btn) btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
-
+      if (btnText) btnText.innerHTML     = '✅ ¡Bienvenido!';
+      if (btn)     btn.style.background  = 'linear-gradient(135deg,#16a34a,#15803d)';
       setTimeout(() => {
         hideLogin();
-        // Carga datos con el perfil del miembro
         fetchOpps();
         fetchGrants();
       }, 700);
-
     } else {
-      showLoginError(data.error || 'Credenciales incorrectas.');
-      resetLoginBtn();
+      if (errorEl) {
+        errorEl.textContent   = data.error || 'Credenciales incorrectas.';
+        errorEl.style.display = 'block';
+      }
+      if (btn)     { btn.disabled = false; btn.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)'; }
+      if (btnText) btnText.innerHTML = 'Ingresar al Command Center →';
     }
 
   } catch(e) {
-    console.error('Login error:', e);
-    showLoginError(`Error de conexión: ${e.message}. Intenta de nuevo.`);
-    resetLoginBtn();
+    if (errorEl) {
+      errorEl.textContent   = 'Error de conexión. Intenta de nuevo.';
+      errorEl.style.display = 'block';
+    }
+    if (btn)     { btn.disabled = false; btn.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)'; }
+    if (btnText) btnText.innerHTML = 'Ingresar al Command Center →';
   }
 }
 
+// ── LOGOUT ────────────────────────────────────────────────
+function doLogout() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  localStorage.removeItem('gb_token');
+  currentMember = null;
+  const emailEl = document.getElementById('login-email');
+  const passEl  = document.getElementById('login-password');
+  const btn     = document.getElementById('login-btn');
+  const btnText = document.getElementById('login-btn-text');
+  if (emailEl) emailEl.value = '';
+  if (passEl)  passEl.value  = '';
+  if (btn)     { btn.disabled = false; btn.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)'; }
+  if (btnText) btnText.innerHTML = 'Ingresar al Command Center →';
+  showLogin();
+}
+
+// ── APPLY MEMBER PROFILE ──────────────────────────────────
+function applyMemberProfile(member) {
+  if (!member) return;
+  const avatarEl = document.querySelector('.top-avatar');
+  if (avatarEl) avatarEl.textContent = member.avatar || member.name.substring(0,2).toUpperCase();
+  const planColors = {
+    Legacy:  'linear-gradient(135deg,#c8a84b,#a8883b)',
+    Prime:   'linear-gradient(135deg,#152978,#1a3090)',
+    Elevate: 'linear-gradient(135deg,#E42D2C,#a01e1d)'
+  };
+  const badge = document.querySelector('.member-badge');
+  if (badge) {
+    badge.textContent      = '⭐ ' + (member.plan || '').toUpperCase();
+    badge.style.background = planColors[member.plan] || planColors.Elevate;
+  }
+  const stateEl = document.getElementById('f-state');
+  const naicsEl = document.getElementById('f-naics');
+  if (stateEl && member.state) stateEl.value = member.state;
+  if (naicsEl && member.naics) naicsEl.value = member.naics;
+  const logoutEl = document.getElementById('logout-btn');
+  if (logoutEl) logoutEl.style.display = 'block';
+  const kpiState = document.getElementById('kpi-state');
+  const kpiNaics = document.getElementById('kpi-naics');
+  if (kpiState) kpiState.textContent = member.state || 'NJ';
+  if (kpiNaics) kpiNaics.textContent = member.naics || '561720';
+}
+
+// ── SHOW / HIDE LOGIN ─────────────────────────────────────
+function showLogin() {
+  const overlay = document.getElementById('login-overlay');
+  const main    = document.getElementById('main');
+  const sidebar = document.getElementById('sidebar');
+  if (overlay) overlay.style.display = 'flex';
+  if (main)    main.style.display    = 'none';
+  if (sidebar) sidebar.style.display = 'none';
+}
+
+function hideLogin() {
+  const overlay = document.getElementById('login-overlay');
+  const main    = document.getElementById('main');
+  const sidebar = document.getElementById('sidebar');
+  if (overlay) overlay.style.display = 'none';
+  if (main)    main.style.display    = 'flex';
+  if (sidebar) sidebar.style.display = 'flex';
+}
+
+function togglePass() {
+  const inp = document.getElementById('login-password');
+  const btn = document.getElementById('pass-toggle');
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text';     if (btn) btn.textContent = '🙈'; }
+  else                         { inp.type = 'password'; if (btn) btn.textContent = '👁️'; }
+}
 // ── LOGOUT ────────────────────────────────────────────────
 function doLogout() {
   if (!confirm('¿Cerrar sesión?')) return;
