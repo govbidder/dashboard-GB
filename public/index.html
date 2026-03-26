@@ -1707,7 +1707,8 @@ function calcAlliance(){
 }
 
 // ── INIT ─────────────────────────────────────────────────
-window.onload=()=>{
+window.onload = () => {
+  checkSession();
   fetchGrants();
   fetchOpps();
 };
