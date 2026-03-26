@@ -1,3 +1,4 @@
+
 const MEMBERS = [
   {
     id: "001",
@@ -43,118 +44,133 @@ const MEMBERS = [
   }
 ];
 
-// ── SIMPLE TOKEN GENERATOR ────────────────────────────────
-function generateToken(member) {
+function makeToken(member) {
   const payload = {
     id: member.id,
     email: member.email,
     plan: member.plan,
-    exp: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+    exp: Date.now() + 86400000 // 24h
   };
-  // Simple base64 encoding (for MVP — use proper JWT in production)
   return Buffer.from(JSON.stringify(payload)).toString('base64');
 }
 
-function verifyToken(token) {
+function parseToken(token) {
   try {
-    const payload = JSON.parse(Buffer.from(token, 'base64').toString());
-    if (payload.exp < Date.now()) return null; // expired
-    return payload;
-  } catch {
-    return null;
-  }
+    const p = JSON.parse(Buffer.from(token, 'base64').toString());
+    return p.exp > Date.now() ? p : null;
+  } catch { return null; }
+}
+
+function safeMember(m) {
+  return {
+    id: m.id, name: m.name, email: m.email,
+    plan: m.plan, planExpiry: m.planExpiry,
+    industry: m.industry, state: m.state,
+    naics: m.naics, memberSince: m.memberSince,
+    avatar: m.avatar
+  };
 }
 
 export default async function handler(req, res) {
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
 
-  const { action } = req.query;
+  const action = req.query.action || req.query.type || '';
 
-  // ── LOGIN ─────────────────────────────────────────────
-  if (action === 'login' && req.method === 'POST') {
-    const { email, password } = req.body;
+  try {
 
-    if (!email || !password) {
-      return res.status(400).json({ success: false, error: 'Email y contraseña requeridos' });
-    }
+    // ── LOGIN ───────────────────────────────────────────
+    if (action === 'login') {
+      // Acepta body tanto de POST como query params (fallback)
+      let email = '', password = '';
 
-    const member = MEMBERS.find(m =>
-      m.email.toLowerCase() === email.toLowerCase() &&
-      m.password === password &&
-      m.active
-    );
+      if (req.method === 'POST' && req.body) {
+        email    = (req.body.email    || '').trim().toLowerCase();
+        password = (req.body.password || '');
+      } else {
+        email    = ((req.query.email    || '')).trim().toLowerCase();
+        password =  (req.query.password || '');
+      }
 
-    if (!member) {
-      return res.status(401).json({
-        success: false,
-        error: 'Email o contraseña incorrectos. Verifica tus credenciales de GovBidder Club.'
+      if (!email || !password) {
+        return res.status(400).json({ success: false, error: 'Email y contraseña requeridos' });
+      }
+
+      const member = MEMBERS.find(m =>
+        m.email.toLowerCase() === email &&
+        m.password === password &&
+        m.active === true
+      );
+
+      if (!member) {
+        return res.status(401).json({
+          success: false,
+          error: 'Email o contraseña incorrectos. Verifica tus credenciales de GovBidder Club.'
+        });
+      }
+
+      if (new Date(member.planExpiry) < new Date()) {
+        return res.status(403).json({
+          success: false,
+          error: 'Tu membresía ha expirado. Renueva en govbidderclub.com'
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        token: makeToken(member),
+        member: safeMember(member)
       });
     }
 
-    // Check plan expiry
-    if (new Date(member.planExpiry) < new Date()) {
-      return res.status(403).json({
-        success: false,
-        error: 'Tu membresía ha expirado. Renueva en govbidderclub.com'
+    // ── VERIFY ──────────────────────────────────────────
+    if (action === 'verify') {
+      let token = '';
+      if (req.method === 'POST' && req.body) {
+        token = req.body.token || '';
+      } else {
+        token = req.query.token || '';
+      }
+
+      if (!token) {
+        return res.status(400).json({ success: false, error: 'Token requerido' });
+      }
+
+      const payload = parseToken(token);
+      if (!payload) {
+        return res.status(401).json({ success: false, error: 'Sesión expirada' });
+      }
+
+      const member = MEMBERS.find(m => m.id === payload.id && m.active);
+      if (!member) {
+        return res.status(401).json({ success: false, error: 'Miembro no encontrado' });
+      }
+
+      return res.status(200).json({ success: true, member: safeMember(member) });
+    }
+
+    // ── LOGOUT ──────────────────────────────────────────
+    if (action === 'logout') {
+      return res.status(200).json({ success: true });
+    }
+
+    // ── TEST — para verificar que el endpoint funciona ──
+    if (action === 'test') {
+      return res.status(200).json({
+        success: true,
+        message: 'Auth API funcionando correctamente',
+        members: MEMBERS.length,
+        timestamp: new Date().toISOString()
       });
     }
 
-    const token = generateToken(member);
+    return res.status(400).json({ success: false, error: `Acción inválida: ${action}` });
 
-    return res.status(200).json({
-      success: true,
-      token,
-      member: {
-        id: member.id,
-        name: member.name,
-        email: member.email,
-        plan: member.plan,
-        planExpiry: member.planExpiry,
-        industry: member.industry,
-        state: member.state,
-        naics: member.naics,
-        memberSince: member.memberSince,
-        avatar: member.avatar
-      }
-    });
+  } catch (err) {
+    console.error('Auth error:', err);
+    return res.status(500).json({ success: false, error: err.message });
   }
-
-  // ── VERIFY TOKEN ──────────────────────────────────────
-  if (action === 'verify' && req.method === 'POST') {
-    const { token } = req.body;
-    if (!token) return res.status(400).json({ success: false, error: 'Token requerido' });
-
-    const payload = verifyToken(token);
-    if (!payload) {
-      return res.status(401).json({ success: false, error: 'Sesión expirada. Por favor inicia sesión.' });
-    }
-
-    const member = MEMBERS.find(m => m.id === payload.id && m.active);
-    if (!member) {
-      return res.status(401).json({ success: false, error: 'Miembro no encontrado o inactivo.' });
-    }
-
-    return res.status(200).json({
-      success: true,
-      member: {
-        id: member.id,
-        name: member.name,
-        email: member.email,
-        plan: member.plan,
-        planExpiry: member.planExpiry,
-        industry: member.industry,
-        state: member.state,
-        naics: member.naics,
-        memberSince: member.memberSince,
-        avatar: member.avatar
-      }
-    });
-  }
-
-  // ── LOGOUT ────────────────────────────────────────────
-  if (action === 'logout') {
-    return res.status(200).json({ success: true, message: 'Sesión cerrada' });
-  }
-
-  return res.status(400).json({ success: false, error: 'Acción inválida' });
 }
