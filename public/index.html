@@ -258,299 +258,152 @@ tr:hover td{background:#f8f9fc;}
     </div>
 
     <!-- GEO -->
-    // ── GEO FUNCTIONS — Agregar al final del bloque <script> ──
+    <!-- ══════════════════════════════════════════════════════
+     REEMPLAZA LA SECCIÓN <!-- GEO --> completa en index.html
+     Busca:  <!-- GEO -->
+     Reemplaza hasta el siguiente:  <!-- COMPETITIVE -->
+     ══════════════════════════════════════════════════════ -->
 
-let allStates = [];
+    <!-- GEO -->
+    <div class="page" id="page-geo">
 
-// Tab switcher
-function geoTab(tab) {
-  document.querySelectorAll('.geo-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.geo-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('geo-' + tab).classList.add('active');
-  if (tab === 'states' && allStates.length === 0) loadAllStates();
-}
-
-// ── LOAD ALL 50 STATES ────────────────────────────────────
-async function loadAllStates() {
-  const grid = document.getElementById('states-grid');
-  grid.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando 50 estados...</div></div>`;
-  try {
-    const res  = await fetch(`${API}/geography?type=states`);
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-    allStates = data.states;
-    document.getElementById('states-count').textContent = `${allStates.length} estados/territorios`;
-    renderStates(allStates);
-  } catch(e) {
-    grid.innerHTML = `<div style="color:#b91c1c;font-size:11px;padding:20px;">❌ ${e.message}</div>`;
-  }
-}
-
-function renderStates(states) {
-  const myState = document.getElementById('f-state')?.value || 'NJ';
-  const grid = document.getElementById('states-grid');
-  const REGION_COLORS = {
-    Northeast: '#dbeafe', South: '#dcfce7',
-    Midwest: '#fef3c7', West: '#f3e8ff', Territory: '#f1f5f9'
-  };
-  grid.innerHTML = states.map(s => `
-    <div class="state-card ${s.code === myState ? 'my-state' : ''}"
-         onclick="selectState('${s.code}','${s.name}')">
-      ${s.code === myState ? '<div style="font-size:9px;color:#E42D2C;font-weight:800;margin-bottom:2px;">⭐ MI ESTADO</div>' : ''}
-      <div class="state-code">${s.code}</div>
-      <div class="state-name">${s.name}</div>
-      <div class="state-capital">📍 ${s.capital}</div>
-      <div style="margin-top:6px;">
-        <span style="background:${REGION_COLORS[s.region]||'#f1f5f9'};color:#374151;font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:10px;">${s.region}</span>
+      <!-- TABS -->
+      <div style="display:flex;gap:0;margin-bottom:18px;background:#fff;border:1px solid #e2e6f0;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <div class="geo-tab active" id="tab-states"     onclick="geoTab('states')">🗺️ 50 States</div>
+        <div class="geo-tab"        id="tab-schools"    onclick="geoTab('schools')">🏫 School Districts</div>
+        <div class="geo-tab"        id="tab-colleges"   onclick="geoTab('colleges')">🎓 Colleges & Universities</div>
+        <div class="geo-tab"        id="tab-detail"     onclick="geoTab('detail')">📊 State Detail</div>
       </div>
-      <div style="margin-top:8px;display:flex;gap:4px;justify-content:center;">
-        <button onclick="event.stopPropagation();viewStateDetail('${s.code}')"
-          style="background:#152978;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-weight:700;">
-          📊 Análisis
-        </button>
-        <a href="${s.procurement}" target="_blank" onclick="event.stopPropagation()"
-          style="background:#E42D2C;color:#fff;border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-weight:700;text-decoration:none;">
-          🔗 Portal
-        </a>
-      </div>
-    </div>`).join('');
-}
 
-function filterStates(q) {
-  if (!q) { renderStates(allStates); return; }
-  const filtered = allStates.filter(s =>
-    s.name.toLowerCase().includes(q.toLowerCase()) ||
-    s.code.toLowerCase().includes(q.toLowerCase()) ||
-    s.capital.toLowerCase().includes(q.toLowerCase())
-  );
-  document.getElementById('states-count').textContent = `${filtered.length} resultados`;
-  renderStates(filtered);
-}
-
-function filterByRegion(region) {
-  if (!region) { renderStates(allStates); return; }
-  const filtered = allStates.filter(s => s.region === region);
-  document.getElementById('states-count').textContent = `${filtered.length} estados`;
-  renderStates(filtered);
-}
-
-function selectState(code, name) {
-  // Switch to detail tab and load
-  document.getElementById('detail-state').value = code;
-  geoTab('detail');
-  loadStateDetail();
-}
-
-function viewStateDetail(code) {
-  document.getElementById('detail-state').value = code;
-  geoTab('detail');
-  loadStateDetail();
-}
-
-// ── STATE DETAIL ──────────────────────────────────────────
-async function loadStateDetail() {
-  const state = document.getElementById('detail-state').value;
-  const naics = document.getElementById('detail-naics').value;
-  const year  = document.getElementById('detail-year').value;
-  const el    = document.getElementById('detail-container');
-  setLoading('detail-container', `Cargando análisis completo de ${state}...`);
-  try {
-    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=${year}`);
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-
-    const s      = data.state;
-    const spend  = data.spending;
-    const maxV   = spend.topVendors?.[0]?.total || 1;
-    const schools    = data.schoolDistricts || [];
-    const univs      = data.universities || [];
-
-    el.innerHTML = `
-      <!-- STATE HEADER -->
-      <div style="background:linear-gradient(135deg,#152978,#1a3090);border-radius:12px;padding:20px 24px;margin-bottom:14px;color:#fff;">
-        <div style="display:flex;align-items:center;gap:16px;">
-          <div style="font-size:48px;font-weight:900;font-family:monospace;opacity:.9;">${s.code}</div>
-          <div>
-            <div style="font-size:18px;font-weight:800;">${s.name}</div>
-            <div style="font-size:11px;opacity:.7;margin-top:2px;">Capital: ${s.capital} · Región: ${s.region}</div>
-            <a href="${s.procurement}" target="_blank" style="display:inline-block;margin-top:8px;background:#E42D2C;color:#fff;padding:4px 12px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal de Procurement →</a>
-          </div>
-          <div style="margin-left:auto;text-align:right;">
-            <div style="font-size:28px;font-weight:900;">$${(spend.total/1e6).toFixed(1)}M</div>
-            <div style="font-size:10px;opacity:.7;">Gasto NAICS ${naics} · ${year}</div>
-            <div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:6px;">${spend.contractCount} contratos encontrados</div>
-          </div>
+      <!-- TAB: 50 STATES GRID -->
+      <div id="geo-states" class="geo-panel active">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+          <input id="state-filter" class="search-input" placeholder="🔍 Filtrar estado..." oninput="filterStates(this.value)" style="max-width:220px;"/>
+          <select class="gf-select" id="state-region" onchange="filterByRegion(this.value)">
+            <option value="">All Regions</option>
+            <option value="Northeast">Northeast</option>
+            <option value="South">South</option>
+            <option value="Midwest">Midwest</option>
+            <option value="West">West</option>
+          </select>
+          <div style="margin-left:auto;font-size:10px;color:#6b7a99;" id="states-count">52 estados/territorios</div>
+        </div>
+        <div id="states-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
+          <div class="loading"><div class="spinner"></div><div class="loading-text">Cargando estados...</div></div>
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-
-        <!-- TOP VENDORS -->
-        <div class="card">
-          <div class="card-title">🏆 Top Vendors en ${s.code} <span class="sub">USASpending live</span></div>
-          ${spend.topVendors.length ? spend.topVendors.map(v => `
-            <div class="bar-row">
-              <div class="bar-label">${(v.name||'').substring(0,18)}</div>
-              <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxV*100)}%"></div></div>
-              <div class="bar-val">$${(v.total/1e3).toFixed(0)}K</div>
-            </div>`).join('')
-          : '<div style="font-size:11px;color:#6b7a99;padding:10px 0;">Sin datos para este NAICS en este estado.</div>'}
+      <!-- TAB: SCHOOL DISTRICTS -->
+      <div id="geo-schools" class="geo-panel">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <select class="gf-select" id="school-state" style="width:180px;">
+            <option value="NJ" selected>New Jersey</option>
+            <option value="NY">New York</option>
+            <option value="FL">Florida</option>
+            <option value="TX">Texas</option>
+            <option value="CA">California</option>
+            <option value="PA">Pennsylvania</option>
+          </select>
+          <select class="gf-select" id="school-naics" style="width:200px;">
+            <option value="561720" selected>561720 - Janitorial</option>
+            <option value="722310">722310 - Food Service</option>
+            <option value="541519">541519 - IT Services</option>
+            <option value="561730">561730 - Landscaping</option>
+            <option value="236220">236220 - Construction</option>
+          </select>
+          <button class="btn-red" onclick="loadSchools()">🏫 Cargar Distritos</button>
         </div>
-
-        <!-- RECENT CONTRACTS -->
-        <div class="card">
-          <div class="card-title">📋 Contratos Recientes <span class="sub">live</span></div>
-          ${spend.recentContracts.length ? `
-            <table><thead><tr><th>RECIPIENT</th><th>CIUDAD</th><th>MONTO</th></tr></thead>
-            <tbody>${spend.recentContracts.slice(0,8).map(c => `<tr>
-              <td style="color:#1a1f36;font-weight:600;">${(c.recipient||'—').substring(0,22)}</td>
-              <td>${c.city||'—'}</td>
-              <td style="font-weight:700;color:#1a1f36;">$${Number(c.amount||0).toLocaleString()}</td>
-            </tr>`).join('')}</tbody></table>`
-          : '<div style="font-size:11px;color:#6b7a99;padding:10px 0;">Sin contratos encontrados.</div>'}
+        <div id="schools-container">
+          <div style="text-align:center;padding:40px;color:#6b7a99;">Selecciona un estado y haz clic en "Cargar Distritos"</div>
         </div>
       </div>
 
-      <!-- SCHOOL DISTRICTS -->
-      ${schools.length ? `
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-title">🏫 School Districts — ${s.name} <span class="sub">${schools.length} distritos principales</span></div>
-          <table><thead><tr><th>DISTRITO</th><th>CIUDAD</th><th>ESTUDIANTES</th><th>PORTAL</th></tr></thead>
-          <tbody>${schools.map(d => `<tr>
-            <td style="color:#1a1f36;font-weight:600;">${d.name}</td>
-            <td>${d.city}</td>
-            <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:5px;font-size:9.5px;font-weight:700;">${Number(d.students).toLocaleString()}</span></td>
-            <td><a href="${d.portal}" target="_blank" style="color:#E42D2C;font-size:10px;font-weight:700;text-decoration:none;">🔗 Ver portal</a></td>
-          </tr>`).join('')}</tbody></table>
-        </div>` : ''}
+      <!-- TAB: COLLEGES -->
+      <div id="geo-colleges" class="geo-panel">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <select class="gf-select" id="college-state" style="width:180px;">
+            <option value="NJ" selected>New Jersey</option>
+            <option value="NY">New York</option>
+            <option value="FL">Florida</option>
+            <option value="TX">Texas</option>
+            <option value="CA">California</option>
+            <option value="PA">Pennsylvania</option>
+          </select>
+          <select class="gf-select" id="college-naics" style="width:200px;">
+            <option value="561720" selected>561720 - Janitorial</option>
+            <option value="722310">722310 - Food Service</option>
+            <option value="541519">541519 - IT Services</option>
+            <option value="561730">561730 - Landscaping</option>
+          </select>
+          <button class="btn-red" onclick="loadColleges()">🎓 Cargar Universidades</button>
+        </div>
+        <div id="colleges-container">
+          <div style="text-align:center;padding:40px;color:#6b7a99;">Selecciona un estado y haz clic en "Cargar Universidades"</div>
+        </div>
+      </div>
 
-      <!-- UNIVERSITIES -->
-      ${univs.length ? `
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-title">🎓 Colleges & Universities — ${s.name} <span class="sub">${univs.length} instituciones</span></div>
-          <table><thead><tr><th>INSTITUCIÓN</th><th>CIUDAD</th><th>TIPO</th><th>PORTAL</th></tr></thead>
-          <tbody>${univs.map(u => `<tr>
-            <td style="color:#1a1f36;font-weight:600;">${u.name}</td>
-            <td>${u.city}</td>
-            <td><span style="background:${u.type==='Public'?'#dcfce7':'#fef3c7'};color:${u.type==='Public'?'#15803d':'#92400e'};padding:2px 7px;border-radius:5px;font-size:9.5px;font-weight:700;">${u.type}</span></td>
-            <td><a href="${u.portal}" target="_blank" style="color:#E42D2C;font-size:10px;font-weight:700;text-decoration:none;">🔗 Ver portal</a></td>
-          </tr>`).join('')}</tbody></table>
-        </div>` : ''}
+      <!-- TAB: STATE DETAIL -->
+      <div id="geo-detail" class="geo-panel">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <select class="gf-select" id="detail-state" style="width:180px;">
+            <option value="NJ" selected>New Jersey</option>
+            <option value="NY">New York</option>
+            <option value="FL">Florida</option>
+            <option value="TX">Texas</option>
+            <option value="CA">California</option>
+            <option value="PA">Pennsylvania</option>
+            <option value="IL">Illinois</option>
+            <option value="OH">Ohio</option>
+            <option value="GA">Georgia</option>
+            <option value="NC">North Carolina</option>
+            <option value="VA">Virginia</option>
+            <option value="MA">Massachusetts</option>
+            <option value="MD">Maryland</option>
+            <option value="CT">Connecticut</option>
+          </select>
+          <select class="gf-select" id="detail-naics" style="width:200px;">
+            <option value="561720" selected>561720 - Janitorial</option>
+            <option value="722310">722310 - Food Service</option>
+            <option value="541519">541519 - IT Services</option>
+            <option value="561730">561730 - Landscaping</option>
+            <option value="236220">236220 - Construction</option>
+            <option value="561612">561612 - Security</option>
+            <option value="484110">484110 - Trucking</option>
+          </select>
+          <select class="gf-select" id="detail-year">
+            <option value="2024" selected>2024</option>
+            <option value="2023">2023</option>
+          </select>
+          <button class="btn-red" onclick="loadStateDetail()">📊 Ver Análisis Completo</button>
+        </div>
+        <div id="detail-container">
+          <div style="text-align:center;padding:40px;color:#6b7a99;">Selecciona estado y NAICS, luego haz clic en "Ver Análisis Completo"</div>
+        </div>
+      </div>
 
-      <!-- ACTION BUTTONS -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button onclick="searchOppsInState('${state}','${naics}')" style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">
-          🔍 Buscar Opps en ${s.code}
-        </button>
-        <button onclick="searchCompetitorsInState('${state}','${naics}')" style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">
-          🏆 Ver Competidores en ${s.code}
-        </button>
-        <a href="${s.procurement}" target="_blank" style="background:#f1f5f9;color:#1a1f36;border:1px solid #e2e6f0;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;text-decoration:none;">
-          🔗 Portal Oficial de ${s.code}
-        </a>
-      </div>`;
+    </div>
 
-  } catch(e) {
-    el.innerHTML = `<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#b91c1c;font-size:11px;">❌ ${e.message}</div>`;
-  }
+<style>
+.geo-tab{
+  flex:1;padding:12px 8px;text-align:center;font-size:11px;font-weight:700;
+  color:#6b7a99;cursor:pointer;transition:.2s;border-right:1px solid #e2e6f0;
 }
-
-// ── SCHOOL DISTRICTS ──────────────────────────────────────
-async function loadSchools() {
-  const state = document.getElementById('school-state').value;
-  const naics = document.getElementById('school-naics').value;
-  const el    = document.getElementById('schools-container');
-  setLoading('schools-container', `Cargando school districts de ${state}...`);
-  try {
-    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024`);
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-    const schools = data.schoolDistricts || [];
-    if (!schools.length) {
-      el.innerHTML = `<div style="text-align:center;padding:30px;color:#6b7a99;">No hay datos de school districts para ${state}. Próximamente más estados.</div>`;
-      return;
-    }
-    el.innerHTML = `
-      <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${schools.length} SCHOOL DISTRICTS — ${state}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
-        ${schools.map(d => `
-          <div style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.2s;"
-               onmouseover="this.style.borderColor='#152978'" onmouseout="this.style.borderColor='#e2e6f0'">
-            <div style="font-size:12px;font-weight:700;color:#1a1f36;margin-bottom:4px;">🏫 ${d.name}</div>
-            <div style="font-size:10.5px;color:#6b7a99;margin-bottom:8px;">📍 ${d.city} · ${state}</div>
-            <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
-              <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:5px;font-size:9.5px;font-weight:700;">👥 ${Number(d.students).toLocaleString()} estudiantes</span>
-            </div>
-            <div style="display:flex;gap:6px;">
-              <a href="${d.portal}" target="_blank" style="flex:1;text-align:center;background:#E42D2C;color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal Procurement</a>
-              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:#152978;color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Ver Opps</button>
-            </div>
-          </div>`).join('')}
-      </div>`;
-  } catch(e) {
-    el.innerHTML = `<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#b91c1c;font-size:11px;">❌ ${e.message}</div>`;
-  }
+.geo-tab:last-child{border-right:none;}
+.geo-tab:hover{background:#f8f9fc;color:#1a1f36;}
+.geo-tab.active{background:linear-gradient(135deg,#152978,#1a3090);color:#fff;}
+.geo-panel{display:none;}
+.geo-panel.active{display:block;}
+.state-card{
+  background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:13px;
+  cursor:pointer;transition:.2s;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.04);
 }
-
-// ── COLLEGES ──────────────────────────────────────────────
-async function loadColleges() {
-  const state = document.getElementById('college-state').value;
-  const naics = document.getElementById('college-naics').value;
-  const el    = document.getElementById('colleges-container');
-  setLoading('colleges-container', `Cargando universidades de ${state}...`);
-  try {
-    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024`);
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-    const univs = data.universities || [];
-    if (!univs.length) {
-      el.innerHTML = `<div style="text-align:center;padding:30px;color:#6b7a99;">No hay datos de universidades para ${state}. Próximamente más estados.</div>`;
-      return;
-    }
-    el.innerHTML = `
-      <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${univs.length} INSTITUCIONES — ${state}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
-        ${univs.map(u => `
-          <div style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.2s;border-top:3px solid ${u.type==='Public'?'#152978':'#E42D2C'};"
-               onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,.04)'">
-            <div style="font-size:12px;font-weight:700;color:#1a1f36;margin-bottom:4px;">🎓 ${u.name}</div>
-            <div style="font-size:10.5px;color:#6b7a99;margin-bottom:8px;">📍 ${u.city} · ${state}</div>
-            <div style="margin-bottom:10px;">
-              <span style="background:${u.type==='Public'?'#dbeafe':'#fef3c7'};color:${u.type==='Public'?'#1d4ed8':'#92400e'};padding:2px 8px;border-radius:5px;font-size:9.5px;font-weight:700;">${u.type === 'Public' ? '🏛️ Pública' : '🏫 Privada'}</span>
-            </div>
-            <div style="display:flex;gap:6px;">
-              <a href="${u.portal}" target="_blank" style="flex:1;text-align:center;background:#E42D2C;color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal Procurement</a>
-              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:#152978;color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Ver Opps</button>
-            </div>
-          </div>`).join('')}
-      </div>`;
-  } catch(e) {
-    el.innerHTML = `<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#b91c1c;font-size:11px;">❌ ${e.message}</div>`;
-  }
-}
-
-// ── HELPERS ───────────────────────────────────────────────
-function searchOppsInState(state, naics) {
-  document.getElementById('opp-state').value = state;
-  document.getElementById('opp-naics').value = naics;
-  document.querySelector('[onclick*="\'opps\'"]').click();
-  setTimeout(() => fetchOpps(), 300);
-}
-
-function searchCompetitorsInState(state, naics) {
-  document.getElementById('comp-state').value = state;
-  document.getElementById('comp-naics').value = naics;
-  document.querySelector('[onclick*="\'compete\'"]').click();
-  setTimeout(() => fetchCompetitors(), 300);
-}
-
-// Auto-load states when geo tab is opened
-document.addEventListener('DOMContentLoaded', () => {
-  // Pre-load states in background
-  setTimeout(() => loadAllStates(), 1000);
-});
-
+.state-card:hover{border-color:#E42D2C;box-shadow:0 4px 12px rgba(228,45,44,.1);transform:translateY(-2px);}
+.state-card.my-state{border-color:#152978;background:linear-gradient(135deg,#eef2ff,#fff);}
+.state-code{font-size:20px;font-weight:900;color:#152978;font-family:monospace;}
+.state-name{font-size:10px;color:#1a1f36;font-weight:600;margin-top:3px;}
+.state-region{font-size:9px;color:#6b7a99;margin-top:2px;}
+.state-capital{font-size:9px;color:#6b7a99;}
+</style>
     <!-- COMPETITIVE -->
     <div class="page" id="page-compete">
       <div class="search-bar">
@@ -1227,6 +1080,298 @@ window.onload=()=>{
   fetchGrants();
   fetchOpps();
 };
+// ── GEO FUNCTIONS — Agregar al final del bloque <script> ──
+
+let allStates = [];
+
+// Tab switcher
+function geoTab(tab) {
+  document.querySelectorAll('.geo-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.geo-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('geo-' + tab).classList.add('active');
+  if (tab === 'states' && allStates.length === 0) loadAllStates();
+}
+
+// ── LOAD ALL 50 STATES ────────────────────────────────────
+async function loadAllStates() {
+  const grid = document.getElementById('states-grid');
+  grid.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando 50 estados...</div></div>`;
+  try {
+    const res  = await fetch(`${API}/geography?type=states`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    allStates = data.states;
+    document.getElementById('states-count').textContent = `${allStates.length} estados/territorios`;
+    renderStates(allStates);
+  } catch(e) {
+    grid.innerHTML = `<div style="color:#b91c1c;font-size:11px;padding:20px;">❌ ${e.message}</div>`;
+  }
+}
+
+function renderStates(states) {
+  const myState = document.getElementById('f-state')?.value || 'NJ';
+  const grid = document.getElementById('states-grid');
+  const REGION_COLORS = {
+    Northeast: '#dbeafe', South: '#dcfce7',
+    Midwest: '#fef3c7', West: '#f3e8ff', Territory: '#f1f5f9'
+  };
+  grid.innerHTML = states.map(s => `
+    <div class="state-card ${s.code === myState ? 'my-state' : ''}"
+         onclick="selectState('${s.code}','${s.name}')">
+      ${s.code === myState ? '<div style="font-size:9px;color:#E42D2C;font-weight:800;margin-bottom:2px;">⭐ MI ESTADO</div>' : ''}
+      <div class="state-code">${s.code}</div>
+      <div class="state-name">${s.name}</div>
+      <div class="state-capital">📍 ${s.capital}</div>
+      <div style="margin-top:6px;">
+        <span style="background:${REGION_COLORS[s.region]||'#f1f5f9'};color:#374151;font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:10px;">${s.region}</span>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:4px;justify-content:center;">
+        <button onclick="event.stopPropagation();viewStateDetail('${s.code}')"
+          style="background:#152978;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-weight:700;">
+          📊 Análisis
+        </button>
+        <a href="${s.procurement}" target="_blank" onclick="event.stopPropagation()"
+          style="background:#E42D2C;color:#fff;border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-weight:700;text-decoration:none;">
+          🔗 Portal
+        </a>
+      </div>
+    </div>`).join('');
+}
+
+function filterStates(q) {
+  if (!q) { renderStates(allStates); return; }
+  const filtered = allStates.filter(s =>
+    s.name.toLowerCase().includes(q.toLowerCase()) ||
+    s.code.toLowerCase().includes(q.toLowerCase()) ||
+    s.capital.toLowerCase().includes(q.toLowerCase())
+  );
+  document.getElementById('states-count').textContent = `${filtered.length} resultados`;
+  renderStates(filtered);
+}
+
+function filterByRegion(region) {
+  if (!region) { renderStates(allStates); return; }
+  const filtered = allStates.filter(s => s.region === region);
+  document.getElementById('states-count').textContent = `${filtered.length} estados`;
+  renderStates(filtered);
+}
+
+function selectState(code, name) {
+  // Switch to detail tab and load
+  document.getElementById('detail-state').value = code;
+  geoTab('detail');
+  loadStateDetail();
+}
+
+function viewStateDetail(code) {
+  document.getElementById('detail-state').value = code;
+  geoTab('detail');
+  loadStateDetail();
+}
+
+// ── STATE DETAIL ──────────────────────────────────────────
+async function loadStateDetail() {
+  const state = document.getElementById('detail-state').value;
+  const naics = document.getElementById('detail-naics').value;
+  const year  = document.getElementById('detail-year').value;
+  const el    = document.getElementById('detail-container');
+  setLoading('detail-container', `Cargando análisis completo de ${state}...`);
+  try {
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=${year}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    const s      = data.state;
+    const spend  = data.spending;
+    const maxV   = spend.topVendors?.[0]?.total || 1;
+    const schools    = data.schoolDistricts || [];
+    const univs      = data.universities || [];
+
+    el.innerHTML = `
+      <!-- STATE HEADER -->
+      <div style="background:linear-gradient(135deg,#152978,#1a3090);border-radius:12px;padding:20px 24px;margin-bottom:14px;color:#fff;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="font-size:48px;font-weight:900;font-family:monospace;opacity:.9;">${s.code}</div>
+          <div>
+            <div style="font-size:18px;font-weight:800;">${s.name}</div>
+            <div style="font-size:11px;opacity:.7;margin-top:2px;">Capital: ${s.capital} · Región: ${s.region}</div>
+            <a href="${s.procurement}" target="_blank" style="display:inline-block;margin-top:8px;background:#E42D2C;color:#fff;padding:4px 12px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal de Procurement →</a>
+          </div>
+          <div style="margin-left:auto;text-align:right;">
+            <div style="font-size:28px;font-weight:900;">$${(spend.total/1e6).toFixed(1)}M</div>
+            <div style="font-size:10px;opacity:.7;">Gasto NAICS ${naics} · ${year}</div>
+            <div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:6px;">${spend.contractCount} contratos encontrados</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+
+        <!-- TOP VENDORS -->
+        <div class="card">
+          <div class="card-title">🏆 Top Vendors en ${s.code} <span class="sub">USASpending live</span></div>
+          ${spend.topVendors.length ? spend.topVendors.map(v => `
+            <div class="bar-row">
+              <div class="bar-label">${(v.name||'').substring(0,18)}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v.total/maxV*100)}%"></div></div>
+              <div class="bar-val">$${(v.total/1e3).toFixed(0)}K</div>
+            </div>`).join('')
+          : '<div style="font-size:11px;color:#6b7a99;padding:10px 0;">Sin datos para este NAICS en este estado.</div>'}
+        </div>
+
+        <!-- RECENT CONTRACTS -->
+        <div class="card">
+          <div class="card-title">📋 Contratos Recientes <span class="sub">live</span></div>
+          ${spend.recentContracts.length ? `
+            <table><thead><tr><th>RECIPIENT</th><th>CIUDAD</th><th>MONTO</th></tr></thead>
+            <tbody>${spend.recentContracts.slice(0,8).map(c => `<tr>
+              <td style="color:#1a1f36;font-weight:600;">${(c.recipient||'—').substring(0,22)}</td>
+              <td>${c.city||'—'}</td>
+              <td style="font-weight:700;color:#1a1f36;">$${Number(c.amount||0).toLocaleString()}</td>
+            </tr>`).join('')}</tbody></table>`
+          : '<div style="font-size:11px;color:#6b7a99;padding:10px 0;">Sin contratos encontrados.</div>'}
+        </div>
+      </div>
+
+      <!-- SCHOOL DISTRICTS -->
+      ${schools.length ? `
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">🏫 School Districts — ${s.name} <span class="sub">${schools.length} distritos principales</span></div>
+          <table><thead><tr><th>DISTRITO</th><th>CIUDAD</th><th>ESTUDIANTES</th><th>PORTAL</th></tr></thead>
+          <tbody>${schools.map(d => `<tr>
+            <td style="color:#1a1f36;font-weight:600;">${d.name}</td>
+            <td>${d.city}</td>
+            <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:5px;font-size:9.5px;font-weight:700;">${Number(d.students).toLocaleString()}</span></td>
+            <td><a href="${d.portal}" target="_blank" style="color:#E42D2C;font-size:10px;font-weight:700;text-decoration:none;">🔗 Ver portal</a></td>
+          </tr>`).join('')}</tbody></table>
+        </div>` : ''}
+
+      <!-- UNIVERSITIES -->
+      ${univs.length ? `
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">🎓 Colleges & Universities — ${s.name} <span class="sub">${univs.length} instituciones</span></div>
+          <table><thead><tr><th>INSTITUCIÓN</th><th>CIUDAD</th><th>TIPO</th><th>PORTAL</th></tr></thead>
+          <tbody>${univs.map(u => `<tr>
+            <td style="color:#1a1f36;font-weight:600;">${u.name}</td>
+            <td>${u.city}</td>
+            <td><span style="background:${u.type==='Public'?'#dcfce7':'#fef3c7'};color:${u.type==='Public'?'#15803d':'#92400e'};padding:2px 7px;border-radius:5px;font-size:9.5px;font-weight:700;">${u.type}</span></td>
+            <td><a href="${u.portal}" target="_blank" style="color:#E42D2C;font-size:10px;font-weight:700;text-decoration:none;">🔗 Ver portal</a></td>
+          </tr>`).join('')}</tbody></table>
+        </div>` : ''}
+
+      <!-- ACTION BUTTONS -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="searchOppsInState('${state}','${naics}')" style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">
+          🔍 Buscar Opps en ${s.code}
+        </button>
+        <button onclick="searchCompetitorsInState('${state}','${naics}')" style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">
+          🏆 Ver Competidores en ${s.code}
+        </button>
+        <a href="${s.procurement}" target="_blank" style="background:#f1f5f9;color:#1a1f36;border:1px solid #e2e6f0;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;text-decoration:none;">
+          🔗 Portal Oficial de ${s.code}
+        </a>
+      </div>`;
+
+  } catch(e) {
+    el.innerHTML = `<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#b91c1c;font-size:11px;">❌ ${e.message}</div>`;
+  }
+}
+
+// ── SCHOOL DISTRICTS ──────────────────────────────────────
+async function loadSchools() {
+  const state = document.getElementById('school-state').value;
+  const naics = document.getElementById('school-naics').value;
+  const el    = document.getElementById('schools-container');
+  setLoading('schools-container', `Cargando school districts de ${state}...`);
+  try {
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const schools = data.schoolDistricts || [];
+    if (!schools.length) {
+      el.innerHTML = `<div style="text-align:center;padding:30px;color:#6b7a99;">No hay datos de school districts para ${state}. Próximamente más estados.</div>`;
+      return;
+    }
+    el.innerHTML = `
+      <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${schools.length} SCHOOL DISTRICTS — ${state}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+        ${schools.map(d => `
+          <div style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.2s;"
+               onmouseover="this.style.borderColor='#152978'" onmouseout="this.style.borderColor='#e2e6f0'">
+            <div style="font-size:12px;font-weight:700;color:#1a1f36;margin-bottom:4px;">🏫 ${d.name}</div>
+            <div style="font-size:10.5px;color:#6b7a99;margin-bottom:8px;">📍 ${d.city} · ${state}</div>
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;">
+              <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:5px;font-size:9.5px;font-weight:700;">👥 ${Number(d.students).toLocaleString()} estudiantes</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <a href="${d.portal}" target="_blank" style="flex:1;text-align:center;background:#E42D2C;color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal Procurement</a>
+              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:#152978;color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Ver Opps</button>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) {
+    el.innerHTML = `<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#b91c1c;font-size:11px;">❌ ${e.message}</div>`;
+  }
+}
+
+// ── COLLEGES ──────────────────────────────────────────────
+async function loadColleges() {
+  const state = document.getElementById('college-state').value;
+  const naics = document.getElementById('college-naics').value;
+  const el    = document.getElementById('colleges-container');
+  setLoading('colleges-container', `Cargando universidades de ${state}...`);
+  try {
+    const res  = await fetch(`${API}/geography?type=state_detail&state=${state}&naics=${naics}&year=2024`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const univs = data.universities || [];
+    if (!univs.length) {
+      el.innerHTML = `<div style="text-align:center;padding:30px;color:#6b7a99;">No hay datos de universidades para ${state}. Próximamente más estados.</div>`;
+      return;
+    }
+    el.innerHTML = `
+      <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${univs.length} INSTITUCIONES — ${state}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+        ${univs.map(u => `
+          <div style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.2s;border-top:3px solid ${u.type==='Public'?'#152978':'#E42D2C'};"
+               onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow='0 1px 4px rgba(0,0,0,.04)'">
+            <div style="font-size:12px;font-weight:700;color:#1a1f36;margin-bottom:4px;">🎓 ${u.name}</div>
+            <div style="font-size:10.5px;color:#6b7a99;margin-bottom:8px;">📍 ${u.city} · ${state}</div>
+            <div style="margin-bottom:10px;">
+              <span style="background:${u.type==='Public'?'#dbeafe':'#fef3c7'};color:${u.type==='Public'?'#1d4ed8':'#92400e'};padding:2px 8px;border-radius:5px;font-size:9.5px;font-weight:700;">${u.type === 'Public' ? '🏛️ Pública' : '🏫 Privada'}</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <a href="${u.portal}" target="_blank" style="flex:1;text-align:center;background:#E42D2C;color:#fff;padding:6px;border-radius:6px;font-size:10px;font-weight:700;text-decoration:none;">🔗 Portal Procurement</a>
+              <button onclick="searchOppsInState('${state}','${naics}')" style="flex:1;background:#152978;color:#fff;border:none;border-radius:6px;padding:6px;font-size:10px;font-weight:700;cursor:pointer;">🔍 Ver Opps</button>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) {
+    el.innerHTML = `<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#b91c1c;font-size:11px;">❌ ${e.message}</div>`;
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────
+function searchOppsInState(state, naics) {
+  document.getElementById('opp-state').value = state;
+  document.getElementById('opp-naics').value = naics;
+  document.querySelector('[onclick*="\'opps\'"]').click();
+  setTimeout(() => fetchOpps(), 300);
+}
+
+function searchCompetitorsInState(state, naics) {
+  document.getElementById('comp-state').value = state;
+  document.getElementById('comp-naics').value = naics;
+  document.querySelector('[onclick*="\'compete\'"]').click();
+  setTimeout(() => fetchCompetitors(), 300);
+}
+
+// Auto-load states when geo tab is opened
+document.addEventListener('DOMContentLoaded', () => {
+  // Pre-load states in background
+  setTimeout(() => loadAllStates(), 1000);
+});
 </script>
 </body>
 </html>
