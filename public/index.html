@@ -229,9 +229,52 @@ tr:hover td{background:#f8f9fc;}
       >
         <span id="login-btn-text">Ingresar al Command Center →</span>
       </button>
-
     </div>
-
+<script>
+function doLogin(){
+  const e=document.getElementById('login-email')?.value?.trim();
+  const p=document.getElementById('login-password')?.value?.trim();
+  const err=document.getElementById('login-error');
+  if(!e||!p){if(err){err.textContent='Ingresa email y contraseña.';err.style.display='block';}return;}
+  const btn=document.getElementById('login-btn');
+  const btxt=document.getElementById('login-btn-text');
+  if(btn)btn.disabled=true;
+  if(btxt)btxt.innerHTML='Verificando...';
+  fetch('/api/auth?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p})})
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.success){
+      localStorage.setItem('gb_token',d.token);
+      if(btxt)btxt.innerHTML='✅ ¡Bienvenido!';
+      if(btn)btn.style.background='linear-gradient(135deg,#16a34a,#15803d)';
+      setTimeout(()=>{
+        const ov=document.getElementById('login-overlay');
+        const mn=document.getElementById('main');
+        const sb=document.getElementById('sidebar');
+        if(ov)ov.style.display='none';
+        if(mn)mn.style.display='flex';
+        if(sb)sb.style.display='flex';
+      },700);
+    }else{
+      if(err){err.textContent=d.error||'Credenciales incorrectas.';err.style.display='block';}
+      if(btn){btn.disabled=false;btn.style.background='linear-gradient(135deg,#E42D2C,#a01e1d)';}
+      if(btxt)btxt.innerHTML='Ingresar al Command Center →';
+    }
+  })
+  .catch(ex=>{
+    if(err){err.textContent='Error de conexión.';err.style.display='block';}
+    if(btn){btn.disabled=false;btn.style.background='linear-gradient(135deg,#E42D2C,#a01e1d)';}
+    if(btxt)btxt.innerHTML='Ingresar al Command Center →';
+  });
+}
+function togglePass(){
+  const i=document.getElementById('login-password');
+  const b=document.getElementById('pass-toggle');
+  if(!i)return;
+  if(i.type==='password'){i.type='text';if(b)b.textContent='🙈';}
+  else{i.type='password';if(b)b.textContent='👁️';}
+}
+</script>
     <!-- FOOTER LINKS -->
     <div style="text-align:center;margin-top:22px;">
       <div style="color:rgba(255,255,255,.25);font-size:10px;margin-bottom:8px;">¿No eres miembro aún?</div>
