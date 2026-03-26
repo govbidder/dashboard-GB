@@ -1195,6 +1195,196 @@ function togglePass() {
 // ── TODAS LAS LLAMADAS VAN A /api/* (tu backend en Vercel) ──
 const API = '/api';
 let liveOpps=[], liveGrants=[];
+    
+let currentMember = null;
+
+// ── CHECK SESSION AL CARGAR ───────────────────────────────
+async function checkSession() {
+  const token = localStorage.getItem('gb_token');
+  if (!token) {
+    showLogin();
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/auth?action=verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+
+    if (!res.ok) throw new Error('verify failed');
+    const data = await res.json();
+
+    if (data.success) {
+      currentMember = data.member;
+      applyMemberProfile(data.member);
+      hideLogin();
+    } else {
+      localStorage.removeItem('gb_token');
+      showLogin();
+    }
+  } catch(e) {
+    console.warn('Session check failed:', e.message);
+    // Si falla la verificación no bloqueamos el acceso
+    localStorage.removeItem('gb_token');
+    showLogin();
+  }
+}
+
+// ── DO LOGIN ──────────────────────────────────────────────
+async function doLogin() {
+  const emailEl    = document.getElementById('login-email');
+  const passwordEl = document.getElementById('login-password');
+  const btn        = document.getElementById('login-btn');
+  const btnText    = document.getElementById('login-btn-text');
+  const errorEl    = document.getElementById('login-error');
+
+  const email    = (emailEl?.value    || '').trim();
+  const password = (passwordEl?.value || '').trim();
+
+  // Clear error
+  if (errorEl) errorEl.style.display = 'none';
+
+  if (!email || !password) {
+    showLoginError('Por favor ingresa tu email y contraseña.');
+    return;
+  }
+
+  // Loading state
+  if (btn)     btn.disabled = true;
+  if (btnText) btnText.innerHTML = 'Verificando...';
+
+  try {
+    const res = await fetch(`${API}/auth?action=login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    // Intenta parsear aunque el status sea error
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(`Error del servidor (HTTP ${res.status})`);
+    }
+
+    if (data.success) {
+      // Guarda token
+      localStorage.setItem('gb_token', data.token);
+      currentMember = data.member;
+      applyMemberProfile(data.member);
+
+      // Success UI
+      if (btnText) btnText.innerHTML = '✅ ¡Bienvenido!';
+      if (btn) btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+
+      setTimeout(() => {
+        hideLogin();
+        // Carga datos con el perfil del miembro
+        fetchOpps();
+        fetchGrants();
+      }, 700);
+
+    } else {
+      showLoginError(data.error || 'Credenciales incorrectas.');
+      resetLoginBtn();
+    }
+
+  } catch(e) {
+    console.error('Login error:', e);
+    showLoginError(`Error de conexión: ${e.message}. Intenta de nuevo.`);
+    resetLoginBtn();
+  }
+}
+
+// ── LOGOUT ────────────────────────────────────────────────
+function doLogout() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  localStorage.removeItem('gb_token');
+  currentMember = null;
+  resetLoginBtn();
+  if (document.getElementById('login-email'))    document.getElementById('login-email').value    = '';
+  if (document.getElementById('login-password')) document.getElementById('login-password').value = '';
+  showLogin();
+}
+
+// ── APPLY MEMBER PROFILE ──────────────────────────────────
+function applyMemberProfile(member) {
+  if (!member) return;
+
+  // Avatar
+  const avatarEl = document.querySelector('.top-avatar');
+  if (avatarEl) avatarEl.textContent = member.avatar || member.name.substring(0,2).toUpperCase();
+
+  // Plan badge color
+  const planColors = {
+    Legacy:  'linear-gradient(135deg,#c8a84b,#a8883b)',
+    Prime:   'linear-gradient(135deg,#152978,#1a3090)',
+    Elevate: 'linear-gradient(135deg,#E42D2C,#a01e1d)'
+  };
+  const badge = document.querySelector('.member-badge');
+  if (badge) {
+    badge.textContent      = `⭐ ${(member.plan||'').toUpperCase()}`;
+    badge.style.background = planColors[member.plan] || planColors.Elevate;
+  }
+
+  // Pre-fill global filters
+  const stateEl = document.getElementById('f-state');
+  const naicsEl = document.getElementById('f-naics');
+  if (stateEl && member.state) stateEl.value = member.state;
+  if (naicsEl && member.naics) naicsEl.value = member.naics;
+
+  // Show logout button
+  const logoutEl = document.getElementById('logout-btn');
+  if (logoutEl) logoutEl.style.display = 'block';
+
+  // Update KPIs
+  const kpiState = document.getElementById('kpi-state');
+  const kpiNaics = document.getElementById('kpi-naics');
+  if (kpiState) kpiState.textContent = member.state || 'NJ';
+  if (kpiNaics) kpiNaics.textContent = member.naics || '561720';
+}
+
+// ── UI HELPERS ────────────────────────────────────────────
+function showLogin() {
+  const overlay  = document.getElementById('login-overlay');
+  const main     = document.getElementById('main');
+  const sidebar  = document.getElementById('sidebar');
+  if (overlay) overlay.style.display = 'flex';
+  if (main)    main.style.display    = 'none';
+  if (sidebar) sidebar.style.display = 'none';
+}
+
+function hideLogin() {
+  const overlay  = document.getElementById('login-overlay');
+  const main     = document.getElementById('main');
+  const sidebar  = document.getElementById('sidebar');
+  if (overlay) overlay.style.display = 'none';
+  if (main)    main.style.display    = 'flex';
+  if (sidebar) sidebar.style.display = 'flex';
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+}
+
+function resetLoginBtn() {
+  const btn     = document.getElementById('login-btn');
+  const btnText = document.getElementById('login-btn-text');
+  if (btn)     { btn.disabled = false; btn.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)'; }
+  if (btnText) btnText.innerHTML = 'Ingresar al Command Center →';
+}
+
+function togglePass() {
+  const inp = document.getElementById('login-password');
+  const btn = document.getElementById('pass-toggle');
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text';     if (btn) btn.textContent = '🙈'; }
+  else                         { inp.type = 'password'; if (btn) btn.textContent = '👁️'; }
+}
 
 const TITLES={
   home:'Home — Command Center',market:'Market Intelligence',
