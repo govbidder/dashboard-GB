@@ -296,219 +296,52 @@ tr:hover td{background:#f8f9fc;}
     </div>
 
     <!-- CODES -->
-    function quickSearch(code) {
-  document.getElementById('code-q').value = code;
-  document.getElementById('code-search-type').value = 'crosswalk';
-  searchCodes();
-}
+    <div class="page" id="page-codes">
 
-async function searchCodes() {
-  const q     = document.getElementById('code-q').value.trim();
-  const type  = document.getElementById('code-search-type').value;
-  const el    = document.getElementById('codes-container');
+      <!-- BUSCADOR PRINCIPAL -->
+      <div style="background:#fff;border:1px solid #e2e6f0;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+        <div style="font-size:13px;font-weight:800;color:#1a1f36;margin-bottom:6px;">🔢 GovBidder Code Intelligence</div>
+        <div style="font-size:11px;color:#6b7a99;margin-bottom:14px;">Busca por código NAICS o keyword — el sistema te devuelve todos tus códigos equivalentes para cada formato gubernamental</div>
 
-  if (!q) return;
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <input
+            class="search-input"
+            id="code-q"
+            placeholder="Ej: 561720  ó  janitorial  ó  cleaning..."
+            style="flex:1;min-width:200px;"
+            onkeydown="if(event.key==='Enter')searchCodes()"
+          />
+          <select class="gf-select" id="code-search-type" style="width:160px;">
+            <option value="search">🔍 Buscar keyword</option>
+            <option value="crosswalk">🔄 Crosswalk exacto</option>
+          </select>
+          <button class="btn-red" onclick="searchCodes()">Buscar</button>
+        </div>
 
-  el.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Buscando en base de datos NAICS 2022...</div></div>`;
+        <!-- QUICK TAGS -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span style="font-size:9.5px;color:#6b7a99;margin-right:4px;line-height:24px;">Populares:</span>
+          <span onclick="quickSearch('561720')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561720 Janitorial</span>
+          <span onclick="quickSearch('541519')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">541519 IT Services</span>
+          <span onclick="quickSearch('236220')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">236220 Construction</span>
+          <span onclick="quickSearch('722310')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">722310 Food Service</span>
+          <span onclick="quickSearch('561730')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561730 Landscaping</span>
+          <span onclick="quickSearch('561612')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">561612 Security</span>
+          <span onclick="quickSearch('484110')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">484110 Trucking</span>
+          <span onclick="quickSearch('621610')" style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;">621610 Home Health</span>
+        </div>
+      </div>
 
-  try {
-    const res  = await fetch(`${API}/codes?query=${encodeURIComponent(q)}&type=${type}`);
-    const data = await res.json();
+      <!-- RESULTADOS -->
+      <div id="codes-container">
+        <div style="text-align:center;padding:40px;color:#6b7a99;">
+          <div style="font-size:40px;margin-bottom:12px;">🔢</div>
+          <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Busca tu código NAICS</div>
+          <div style="font-size:11.5px;">Ingresa tu NAICS code o keyword y el sistema te dirá<br>tu equivalente en SIC, PSC, UNSPSC y NIGP</div>
+        </div>
+      </div>
 
-    if (!data.success) throw new Error(data.error);
-
-    // ── CROSSWALK VIEW ──────────────────────────────────
-    if (type === 'crosswalk' && data.codes) {
-      el.innerHTML = `
-        <div style="background:#fff;border:1px solid #e2e6f0;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);">
-
-          <!-- HEADER -->
-          <div style="background:linear-gradient(135deg,#152978,#1a3090);padding:20px 24px;">
-            <div style="display:flex;align-items:center;gap:12px;">
-              <div style="background:#E42D2C;color:#fff;padding:6px 14px;border-radius:8px;font-size:18px;font-weight:900;font-family:monospace;">${data.naics}</div>
-              <div>
-                <div style="color:#fff;font-size:14px;font-weight:800;">${data.title}</div>
-                <div style="color:rgba(255,255,255,.6);font-size:11px;margin-top:2px;">Sector: ${data.sector}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- CODES GRID -->
-          <div style="padding:20px;">
-            <div style="font-size:10px;font-weight:700;color:#6b7a99;letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-
-              <!-- NAICS -->
-              <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:2px solid #c7d2fe;border-radius:10px;padding:16px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#152978;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">NAICS</div>
-                  <div style="font-size:9px;color:#6b7a99;">North American Industry Classification</div>
-                </div>
-                <div style="font-size:26px;font-weight:900;color:#152978;font-family:monospace;">${data.codes.naics.code}</div>
-                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.naics.title}</div>
-                <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.naics.code}');showCopied(this)" style="background:#dbeafe;color:#1d4ed8;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
-                  <a href="https://www.census.gov/naics/?input=${data.codes.naics.code}&year=2022&details=${data.codes.naics.code}" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 Census.gov →</a>
-                </div>
-              </div>
-
-              <!-- SIC -->
-              <div style="background:linear-gradient(135deg,#fff7ed,#fff);border:2px solid #fed7aa;border-radius:10px;padding:16px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#c2410c;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">SIC</div>
-                  <div style="font-size:9px;color:#6b7a99;">Standard Industrial Classification</div>
-                </div>
-                <div style="font-size:26px;font-weight:900;color:#c2410c;font-family:monospace;">${data.codes.sic.code}</div>
-                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.sic.title}</div>
-                <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.sic.code}');showCopied(this)" style="background:#ffedd5;color:#c2410c;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
-                  <a href="https://www.osha.gov/data/sic-manual" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 OSHA →</a>
-                </div>
-              </div>
-
-              <!-- PSC -->
-              <div style="background:linear-gradient(135deg,#f0fdf4,#fff);border:2px solid #86efac;border-radius:10px;padding:16px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#15803d;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">PSC</div>
-                  <div style="font-size:9px;color:#6b7a99;">Product Service Code — Federal</div>
-                </div>
-                <div style="font-size:26px;font-weight:900;color:#15803d;font-family:monospace;">${data.codes.psc.code}</div>
-                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.psc.title}</div>
-                <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.psc.code}');showCopied(this)" style="background:#dcfce7;color:#15803d;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
-                  <a href="https://sam.gov/search/?index=opp&sfm%5BsimpleSearch%5D%5BkeywordRadio%5D=ALL&sfm%5Bstatus%5D%5B0%5D=Active" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 SAM.gov →</a>
-                </div>
-              </div>
-
-              <!-- UNSPSC -->
-              <div style="background:linear-gradient(135deg,#fdf4ff,#fff);border:2px solid #e9d5ff;border-radius:10px;padding:16px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                  <div style="background:#7e22ce;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">UNSPSC</div>
-                  <div style="font-size:9px;color:#6b7a99;">UN Standard Products & Services Code</div>
-                </div>
-                <div style="font-size:22px;font-weight:900;color:#7e22ce;font-family:monospace;">${data.codes.unspsc.code}</div>
-                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.unspsc.title}</div>
-                <div style="margin-top:10px;">
-                  <button onclick="navigator.clipboard.writeText('${data.codes.unspsc.code}');showCopied(this)" style="background:#f3e8ff;color:#7e22ce;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
-                  <a href="https://www.unspsc.org" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 UNSPSC →</a>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- NIGP -->
-            <div style="margin-top:12px;background:linear-gradient(135deg,#fffbeb,#fff);border:2px solid #fde68a;border-radius:10px;padding:16px;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <div style="background:#92400e;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">NIGP</div>
-                <div style="font-size:9px;color:#6b7a99;">National Institute of Governmental Purchasing</div>
-                ${data.codes.nigp.code !== 'Contact NIGP' ? '<span style="background:#dcfce7;color:#15803d;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;">✓ Disponible</span>' : '<span style="background:#fee2e2;color:#b91c1c;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;">Licencia requerida</span>'}
-              </div>
-              <div style="display:flex;align-items:center;gap:16px;">
-                <div style="font-size:26px;font-weight:900;color:#92400e;font-family:monospace;">${data.codes.nigp.code}</div>
-                <div>
-                  <div style="font-size:11px;color:#1a1f36;font-weight:600;">${data.codes.nigp.title}</div>
-                  <div style="font-size:10px;color:#6b7a99;margin-top:2px;">Usado por estados, counties, school districts y universidades</div>
-                </div>
-                ${data.codes.nigp.code !== 'Contact NIGP' ? `<button onclick="navigator.clipboard.writeText('${data.codes.nigp.code}');showCopied(this)" style="margin-left:auto;background:#fef3c7;color:#92400e;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>` : ''}
-              </div>
-            </div>
-
-            <!-- AI SUGGESTION -->
-            <div style="margin-top:12px;background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:10px;padding:14px;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <span>🤖</span>
-                <span style="background:linear-gradient(135deg,#E42D2C,#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
-                <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:#E42D2C;color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
-              </div>
-              <div id="code-ai-tip" style="font-size:11px;color:#374151;line-height:1.6;">Haz clic en "Analizar" para ver estrategia de uso de este código en contratos gubernamentales.</div>
-            </div>
-
-            <!-- BUSCAR OPPS CON ESTE CÓDIGO -->
-            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-              <button onclick="searchWithCode('${data.naics}')" style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Oportunidades con NAICS ${data.naics}</button>
-              <button onclick="searchMarketWithCode('${data.naics}')" style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">📊 Ver Market Data</button>
-            </div>
-          </div>
-        </div>`;
-
-    // ── SEARCH RESULTS VIEW ─────────────────────────────
-    } else if (data.results) {
-      if (data.results.length === 0) {
-        el.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7a99;">
-          <div style="font-size:32px;margin-bottom:8px;">🔍</div>
-          <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Sin resultados para "${q}"</div>
-          <div style="font-size:11.5px;">Intenta con otro término o código exacto</div>
-        </div>`;
-        return;
-      }
-
-      el.innerHTML = `
-        <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${data.count} RESULTADO${data.count!==1?'S':''} PARA "${q.toUpperCase()}"</div>
-        ${data.results.map(r => `
-          <div onclick="quickCrosswalk('${r.naics}')" style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.04);"
-               onmouseover="this.style.borderColor='#E42D2C';this.style.boxShadow='0 4px 12px rgba(228,45,44,.1)'"
-               onmouseout="this.style.borderColor='#e2e6f0';this.style.boxShadow='0 1px 4px rgba(0,0,0,.04)'">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-              <span style="background:#E42D2C;color:#fff;padding:3px 10px;border-radius:6px;font-size:13px;font-weight:900;font-family:monospace;">${r.naics}</span>
-              <span style="font-size:12.5px;font-weight:700;color:#1a1f36;">${r.title}</span>
-              <span style="margin-left:auto;font-size:9.5px;color:#6b7a99;background:#f1f5f9;padding:2px 8px;border-radius:5px;">${r.sector}</span>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">SIC: ${r.sic}</span>
-              <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">PSC: ${r.psc}</span>
-              <span style="background:#f3e8ff;color:#7e22ce;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">UNSPSC: ${r.unspsc}</span>
-              ${r.nigp ? `<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">NIGP: ${r.nigp}</span>` : ''}
-              <span style="margin-left:auto;font-size:10px;color:#E42D2C;font-weight:700;">Ver crosswalk completo →</span>
-            </div>
-          </div>`).join('')}`;
-    }
-
-  } catch (e) {
-    el.innerHTML = `<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#b91c1c;font-size:11px;">❌ Error: ${e.message}</div>`;
-  }
-}
-
-function quickCrosswalk(code) {
-  document.getElementById('code-q').value = code;
-  document.getElementById('code-search-type').value = 'crosswalk';
-  searchCodes();
-}
-
-function showCopied(btn) {
-  const orig = btn.textContent;
-  btn.textContent = '✅ Copiado';
-  setTimeout(() => btn.textContent = orig, 1500);
-}
-
-function searchWithCode(naics) {
-  document.getElementById('opp-naics').value = naics;
-  document.querySelector('[onclick*="opps"]').click();
-}
-
-function searchMarketWithCode(naics) {
-  document.getElementById('mkt-naics').value = naics;
-  document.querySelector('[onclick*="market"]').click();
-  setTimeout(() => fetchMarket(), 300);
-}
-
-async function getCodeAI(naics, title) {
-  const el = document.getElementById('code-ai-tip');
-  el.innerHTML = '<span style="display:inline-flex;gap:3px;"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></span>';
-  try {
-    const res = await fetch(`${API}/ai`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        prompt: `Para el código NAICS ${naics} (${title}): ¿Qué tipo de compradores gubernamentales usan este código más? ¿En qué estados hay más demanda? ¿Qué set-asides aplican comúnmente? Dame 3 tips estratégicos para ganar contratos con este código. Responde en español, máximo 120 palabras.`,
-        context: 'GovBidder Club member, small business, government contracting'
-      })
-    });
-    const data = await res.json();
-    el.textContent = data.success ? data.response : 'AI no disponible.';
-  } catch (e) {
-    el.textContent = 'AI no disponible en este momento.';
-  }
-}
+    </div>
     <!-- PIPELINE -->
     <div class="page" id="page-pipeline">
       <div class="pipeline-board">
@@ -859,23 +692,220 @@ const NAICS_DB=[
   {code:'561210',title:'Facilities Support Services',desc:'Range of support services within a client facility.',related:['561720','561110']},
   {code:'561730',title:'Landscaping Services',desc:'Planting trees, shrubs, flowers, grounds maintenance.',related:['561720']},
 ];
-function searchNAICS(){
-  const q=document.getElementById('code-q').value.trim().toLowerCase();
-  if(!q) return;
-  const hits=NAICS_DB.filter(c=>c.code.includes(q)||c.title.toLowerCase().includes(q)||c.desc.toLowerCase().includes(q));
-  document.getElementById('codes-container').innerHTML=hits.length
-    ? hits.map(c=>`<div class="card" style="margin-bottom:12px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-          <span style="background:linear-gradient(135deg,var(--accent),#8b1514);color:#fff;padding:3px 9px;border-radius:6px;font-size:13px;font-weight:800;">${c.code}</span>
-          <span style="font-size:13px;font-weight:700;color:var(--text);">${c.title}</span>
-          <span style="margin-left:auto;" class="badge bm">NAICS</span>
-        </div>
-        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;">${c.desc}</p>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">${c.related.map(r=>`<span class="badge bb" style="cursor:pointer;" onclick="document.getElementById('code-q').value='${r}';searchNAICS();">${r}</span>`).join('')}</div>
-      </div>`).join('')
-    : `<div style="text-align:center;padding:30px;color:var(--muted);">Sin resultados para "${q}"</div>`;
+
+function quickSearch(code) {
+  document.getElementById('code-q').value = code;
+  document.getElementById('code-search-type').value = 'crosswalk';
+  searchCodes();
 }
 
+async function searchCodes() {
+  const q     = document.getElementById('code-q').value.trim();
+  const type  = document.getElementById('code-search-type').value;
+  const el    = document.getElementById('codes-container');
+
+  if (!q) return;
+
+  el.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Buscando en base de datos NAICS 2022...</div></div>`;
+
+  try {
+    const res  = await fetch(`${API}/codes?query=${encodeURIComponent(q)}&type=${type}`);
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.error);
+
+    // ── CROSSWALK VIEW ──────────────────────────────────
+    if (type === 'crosswalk' && data.codes) {
+      el.innerHTML = `
+        <div style="background:#fff;border:1px solid #e2e6f0;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+
+          <!-- HEADER -->
+          <div style="background:linear-gradient(135deg,#152978,#1a3090);padding:20px 24px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="background:#E42D2C;color:#fff;padding:6px 14px;border-radius:8px;font-size:18px;font-weight:900;font-family:monospace;">${data.naics}</div>
+              <div>
+                <div style="color:#fff;font-size:14px;font-weight:800;">${data.title}</div>
+                <div style="color:rgba(255,255,255,.6);font-size:11px;margin-top:2px;">Sector: ${data.sector}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CODES GRID -->
+          <div style="padding:20px;">
+            <div style="font-size:10px;font-weight:700;color:#6b7a99;letter-spacing:1px;margin-bottom:14px;">CÓDIGOS EQUIVALENTES EN TODOS LOS FORMATOS GUBERNAMENTALES</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+              <!-- NAICS -->
+              <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:2px solid #c7d2fe;border-radius:10px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="background:#152978;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">NAICS</div>
+                  <div style="font-size:9px;color:#6b7a99;">North American Industry Classification</div>
+                </div>
+                <div style="font-size:26px;font-weight:900;color:#152978;font-family:monospace;">${data.codes.naics.code}</div>
+                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.naics.title}</div>
+                <div style="margin-top:10px;">
+                  <button onclick="navigator.clipboard.writeText('${data.codes.naics.code}');showCopied(this)" style="background:#dbeafe;color:#1d4ed8;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <a href="https://www.census.gov/naics/?input=${data.codes.naics.code}&year=2022&details=${data.codes.naics.code}" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 Census.gov →</a>
+                </div>
+              </div>
+
+              <!-- SIC -->
+              <div style="background:linear-gradient(135deg,#fff7ed,#fff);border:2px solid #fed7aa;border-radius:10px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="background:#c2410c;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">SIC</div>
+                  <div style="font-size:9px;color:#6b7a99;">Standard Industrial Classification</div>
+                </div>
+                <div style="font-size:26px;font-weight:900;color:#c2410c;font-family:monospace;">${data.codes.sic.code}</div>
+                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.sic.title}</div>
+                <div style="margin-top:10px;">
+                  <button onclick="navigator.clipboard.writeText('${data.codes.sic.code}');showCopied(this)" style="background:#ffedd5;color:#c2410c;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <a href="https://www.osha.gov/data/sic-manual" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 OSHA →</a>
+                </div>
+              </div>
+
+              <!-- PSC -->
+              <div style="background:linear-gradient(135deg,#f0fdf4,#fff);border:2px solid #86efac;border-radius:10px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="background:#15803d;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">PSC</div>
+                  <div style="font-size:9px;color:#6b7a99;">Product Service Code — Federal</div>
+                </div>
+                <div style="font-size:26px;font-weight:900;color:#15803d;font-family:monospace;">${data.codes.psc.code}</div>
+                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.psc.title}</div>
+                <div style="margin-top:10px;">
+                  <button onclick="navigator.clipboard.writeText('${data.codes.psc.code}');showCopied(this)" style="background:#dcfce7;color:#15803d;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <a href="https://sam.gov/search/?index=opp&sfm%5BsimpleSearch%5D%5BkeywordRadio%5D=ALL&sfm%5Bstatus%5D%5B0%5D=Active" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 SAM.gov →</a>
+                </div>
+              </div>
+
+              <!-- UNSPSC -->
+              <div style="background:linear-gradient(135deg,#fdf4ff,#fff);border:2px solid #e9d5ff;border-radius:10px;padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="background:#7e22ce;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">UNSPSC</div>
+                  <div style="font-size:9px;color:#6b7a99;">UN Standard Products & Services Code</div>
+                </div>
+                <div style="font-size:22px;font-weight:900;color:#7e22ce;font-family:monospace;">${data.codes.unspsc.code}</div>
+                <div style="font-size:11px;color:#1a1f36;margin-top:4px;font-weight:600;">${data.codes.unspsc.title}</div>
+                <div style="margin-top:10px;">
+                  <button onclick="navigator.clipboard.writeText('${data.codes.unspsc.code}');showCopied(this)" style="background:#f3e8ff;color:#7e22ce;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>
+                  <a href="https://www.unspsc.org" target="_blank" style="margin-left:6px;font-size:10px;color:#E42D2C;font-weight:700;text-decoration:none;">🔗 UNSPSC →</a>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- NIGP -->
+            <div style="margin-top:12px;background:linear-gradient(135deg,#fffbeb,#fff);border:2px solid #fde68a;border-radius:10px;padding:16px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <div style="background:#92400e;color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.5px;">NIGP</div>
+                <div style="font-size:9px;color:#6b7a99;">National Institute of Governmental Purchasing</div>
+                ${data.codes.nigp.code !== 'Contact NIGP' ? '<span style="background:#dcfce7;color:#15803d;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;">✓ Disponible</span>' : '<span style="background:#fee2e2;color:#b91c1c;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;">Licencia requerida</span>'}
+              </div>
+              <div style="display:flex;align-items:center;gap:16px;">
+                <div style="font-size:26px;font-weight:900;color:#92400e;font-family:monospace;">${data.codes.nigp.code}</div>
+                <div>
+                  <div style="font-size:11px;color:#1a1f36;font-weight:600;">${data.codes.nigp.title}</div>
+                  <div style="font-size:10px;color:#6b7a99;margin-top:2px;">Usado por estados, counties, school districts y universidades</div>
+                </div>
+                ${data.codes.nigp.code !== 'Contact NIGP' ? `<button onclick="navigator.clipboard.writeText('${data.codes.nigp.code}');showCopied(this)" style="margin-left:auto;background:#fef3c7;color:#92400e;border:none;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer;font-weight:700;">📋 Copiar</button>` : ''}
+              </div>
+            </div>
+
+            <!-- AI SUGGESTION -->
+            <div style="margin-top:12px;background:linear-gradient(135deg,#eef2ff,#fff5f5);border:1px solid #c7d2fe;border-radius:10px;padding:14px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <span>🤖</span>
+                <span style="background:linear-gradient(135deg,#E42D2C,#8b1514);color:#fff;font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;">AI STRATEGY TIP</span>
+                <button onclick="getCodeAI('${data.naics}','${data.title}')" style="margin-left:auto;background:#E42D2C;color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:9.5px;cursor:pointer;font-weight:700;">↻ Analizar</button>
+              </div>
+              <div id="code-ai-tip" style="font-size:11px;color:#374151;line-height:1.6;">Haz clic en "Analizar" para ver estrategia de uso de este código en contratos gubernamentales.</div>
+            </div>
+
+            <!-- BUSCAR OPPS CON ESTE CÓDIGO -->
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="searchWithCode('${data.naics}')" style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">🔍 Buscar Oportunidades con NAICS ${data.naics}</button>
+              <button onclick="searchMarketWithCode('${data.naics}')" style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:11px;font-weight:700;cursor:pointer;">📊 Ver Market Data</button>
+            </div>
+          </div>
+        </div>`;
+
+    // ── SEARCH RESULTS VIEW ─────────────────────────────
+    } else if (data.results) {
+      if (data.results.length === 0) {
+        el.innerHTML = `<div style="text-align:center;padding:40px;color:#6b7a99;">
+          <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+          <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Sin resultados para "${q}"</div>
+          <div style="font-size:11.5px;">Intenta con otro término o código exacto</div>
+        </div>`;
+        return;
+      }
+
+      el.innerHTML = `
+        <div style="font-size:10px;color:#6b7a99;font-weight:700;letter-spacing:.8px;margin-bottom:12px;">${data.count} RESULTADO${data.count!==1?'S':''} PARA "${q.toUpperCase()}"</div>
+        ${data.results.map(r => `
+          <div onclick="quickCrosswalk('${r.naics}')" style="background:#fff;border:1px solid #e2e6f0;border-radius:10px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.04);"
+               onmouseover="this.style.borderColor='#E42D2C';this.style.boxShadow='0 4px 12px rgba(228,45,44,.1)'"
+               onmouseout="this.style.borderColor='#e2e6f0';this.style.boxShadow='0 1px 4px rgba(0,0,0,.04)'">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <span style="background:#E42D2C;color:#fff;padding:3px 10px;border-radius:6px;font-size:13px;font-weight:900;font-family:monospace;">${r.naics}</span>
+              <span style="font-size:12.5px;font-weight:700;color:#1a1f36;">${r.title}</span>
+              <span style="margin-left:auto;font-size:9.5px;color:#6b7a99;background:#f1f5f9;padding:2px 8px;border-radius:5px;">${r.sector}</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">SIC: ${r.sic}</span>
+              <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">PSC: ${r.psc}</span>
+              <span style="background:#f3e8ff;color:#7e22ce;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">UNSPSC: ${r.unspsc}</span>
+              ${r.nigp ? `<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:700;">NIGP: ${r.nigp}</span>` : ''}
+              <span style="margin-left:auto;font-size:10px;color:#E42D2C;font-weight:700;">Ver crosswalk completo →</span>
+            </div>
+          </div>`).join('')}`;
+    }
+
+  } catch (e) {
+    el.innerHTML = `<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#b91c1c;font-size:11px;">❌ Error: ${e.message}</div>`;
+  }
+}
+
+function quickCrosswalk(code) {
+  document.getElementById('code-q').value = code;
+  document.getElementById('code-search-type').value = 'crosswalk';
+  searchCodes();
+}
+
+function showCopied(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '✅ Copiado';
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+
+function searchWithCode(naics) {
+  document.getElementById('opp-naics').value = naics;
+  document.querySelector('[onclick*="opps"]').click();
+}
+
+function searchMarketWithCode(naics) {
+  document.getElementById('mkt-naics').value = naics;
+  document.querySelector('[onclick*="market"]').click();
+  setTimeout(() => fetchMarket(), 300);
+}
+
+async function getCodeAI(naics, title) {
+  const el = document.getElementById('code-ai-tip');
+  el.innerHTML = '<span style="display:inline-flex;gap:3px;"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></span>';
+  try {
+    const res = await fetch(`${API}/ai`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: `Para el código NAICS ${naics} (${title}): ¿Qué tipo de compradores gubernamentales usan este código más? ¿En qué estados hay más demanda? ¿Qué set-asides aplican comúnmente? Dame 3 tips estratégicos para ganar contratos con este código. Responde en español, máximo 120 palabras.`,
+        context: 'GovBidder Club member, small business, government contracting'
+      })
+    });
+    const data = await res.json();
+    el.textContent = data.success ? data.response : 'AI no disponible.';
+  } catch (e) {
+    el.textContent = 'AI no disponible en este momento.';
+  }
+}
 // ── AI ───────────────────────────────────────────────────
 async function runAI(page){
   const el=document.getElementById(`ai-${page}`);
