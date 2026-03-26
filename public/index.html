@@ -135,11 +135,77 @@ tr:hover td{background:#f8f9fc;}
   <div id="topbar">
     <div class="page-title" id="ptitle">Home — Command Center</div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
-      <select class="gf-select" id="f-state">
-        <option value="NJ" selected>🗺 New Jersey</option>
-        <option value="NY">New York</option><option value="FL">Florida</option>
-        <option value="TX">Texas</option><option value="CA">California</option>
-      </select>
+     
+<select class="gf-select" id="detail-state" style="width:220px;">
+  <option value="">Selecciona un estado...</option>
+  <!-- NORTHEAST -->
+  <optgroup label="── NORTHEAST ──">
+    <option value="CT">Connecticut (CT)</option>
+    <option value="DC">Washington DC (DC)</option>
+    <option value="DE">Delaware (DE)</option>
+    <option value="MA">Massachusetts (MA)</option>
+    <option value="MD">Maryland (MD)</option>
+    <option value="ME">Maine (ME)</option>
+    <option value="NH">New Hampshire (NH)</option>
+    <option value="NJ" selected>New Jersey (NJ)</option>
+    <option value="NY">New York (NY)</option>
+    <option value="PA">Pennsylvania (PA)</option>
+    <option value="RI">Rhode Island (RI)</option>
+    <option value="VT">Vermont (VT)</option>
+  </optgroup>
+  <!-- SOUTH -->
+  <optgroup label="── SOUTH ──">
+    <option value="AL">Alabama (AL)</option>
+    <option value="AR">Arkansas (AR)</option>
+    <option value="FL">Florida (FL)</option>
+    <option value="GA">Georgia (GA)</option>
+    <option value="KY">Kentucky (KY)</option>
+    <option value="LA">Louisiana (LA)</option>
+    <option value="MS">Mississippi (MS)</option>
+    <option value="NC">North Carolina (NC)</option>
+    <option value="OK">Oklahoma (OK)</option>
+    <option value="SC">South Carolina (SC)</option>
+    <option value="TN">Tennessee (TN)</option>
+    <option value="TX">Texas (TX)</option>
+    <option value="VA">Virginia (VA)</option>
+    <option value="WV">West Virginia (WV)</option>
+  </optgroup>
+  <!-- MIDWEST -->
+  <optgroup label="── MIDWEST ──">
+    <option value="IA">Iowa (IA)</option>
+    <option value="IL">Illinois (IL)</option>
+    <option value="IN">Indiana (IN)</option>
+    <option value="KS">Kansas (KS)</option>
+    <option value="MI">Michigan (MI)</option>
+    <option value="MN">Minnesota (MN)</option>
+    <option value="MO">Missouri (MO)</option>
+    <option value="ND">North Dakota (ND)</option>
+    <option value="NE">Nebraska (NE)</option>
+    <option value="OH">Ohio (OH)</option>
+    <option value="SD">South Dakota (SD)</option>
+    <option value="WI">Wisconsin (WI)</option>
+  </optgroup>
+  <!-- WEST -->
+  <optgroup label="── WEST ──">
+    <option value="AK">Alaska (AK)</option>
+    <option value="AZ">Arizona (AZ)</option>
+    <option value="CA">California (CA)</option>
+    <option value="CO">Colorado (CO)</option>
+    <option value="HI">Hawaii (HI)</option>
+    <option value="ID">Idaho (ID)</option>
+    <option value="MT">Montana (MT)</option>
+    <option value="NM">New Mexico (NM)</option>
+    <option value="NV">Nevada (NV)</option>
+    <option value="OR">Oregon (OR)</option>
+    <option value="UT">Utah (UT)</option>
+    <option value="WA">Washington (WA)</option>
+    <option value="WY">Wyoming (WY)</option>
+  </optgroup>
+  <!-- TERRITORIES -->
+  <optgroup label="── TERRITORIES ──">
+    <option value="PR">Puerto Rico (PR)</option>
+  </optgroup>
+</select>
       <select class="gf-select" id="f-naics">
         <option value="561720" selected>NAICS 561720</option>
         <option value="541519">NAICS 541519</option>
@@ -289,14 +355,71 @@ tr:hover td{background:#f8f9fc;}
       <!-- TAB: SCHOOL DISTRICTS -->
       <div id="geo-schools" class="geo-panel">
         <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-          <select class="gf-select" id="school-state" style="width:200px;">
-            <option value="NJ" selected>New Jersey</option>
-            <option value="NY">New York</option>
-            <option value="FL">Florida</option>
-            <option value="TX">Texas</option>
-            <option value="CA">California</option>
-            <option value="PA">Pennsylvania</option>
-          </select>
+         
+<select class="gf-select" id="school-state" style="width:200px;">
+  <optgroup label="── NORTHEAST ──">
+    <option value="CT">Connecticut (CT)</option>
+    <option value="DC">Washington DC (DC)</option>
+    <option value="DE">Delaware (DE)</option>
+    <option value="MA">Massachusetts (MA)</option>
+    <option value="MD">Maryland (MD)</option>
+    <option value="ME">Maine (ME)</option>
+    <option value="NH">New Hampshire (NH)</option>
+    <option value="NJ" selected>New Jersey (NJ)</option>
+    <option value="NY">New York (NY)</option>
+    <option value="PA">Pennsylvania (PA)</option>
+    <option value="RI">Rhode Island (RI)</option>
+    <option value="VT">Vermont (VT)</option>
+  </optgroup>
+  <optgroup label="── SOUTH ──">
+    <option value="AL">Alabama (AL)</option>
+    <option value="AR">Arkansas (AR)</option>
+    <option value="FL">Florida (FL)</option>
+    <option value="GA">Georgia (GA)</option>
+    <option value="KY">Kentucky (KY)</option>
+    <option value="LA">Louisiana (LA)</option>
+    <option value="MS">Mississippi (MS)</option>
+    <option value="NC">North Carolina (NC)</option>
+    <option value="OK">Oklahoma (OK)</option>
+    <option value="SC">South Carolina (SC)</option>
+    <option value="TN">Tennessee (TN)</option>
+    <option value="TX">Texas (TX)</option>
+    <option value="VA">Virginia (VA)</option>
+    <option value="WV">West Virginia (WV)</option>
+  </optgroup>
+  <optgroup label="── MIDWEST ──">
+    <option value="IA">Iowa (IA)</option>
+    <option value="IL">Illinois (IL)</option>
+    <option value="IN">Indiana (IN)</option>
+    <option value="KS">Kansas (KS)</option>
+    <option value="MI">Michigan (MI)</option>
+    <option value="MN">Minnesota (MN)</option>
+    <option value="MO">Missouri (MO)</option>
+    <option value="ND">North Dakota (ND)</option>
+    <option value="NE">Nebraska (NE)</option>
+    <option value="OH">Ohio (OH)</option>
+    <option value="SD">South Dakota (SD)</option>
+    <option value="WI">Wisconsin (WI)</option>
+  </optgroup>
+  <optgroup label="── WEST ──">
+    <option value="AK">Alaska (AK)</option>
+    <option value="AZ">Arizona (AZ)</option>
+    <option value="CA">California (CA)</option>
+    <option value="CO">Colorado (CO)</option>
+    <option value="HI">Hawaii (HI)</option>
+    <option value="ID">Idaho (ID)</option>
+    <option value="MT">Montana (MT)</option>
+    <option value="NM">New Mexico (NM)</option>
+    <option value="NV">Nevada (NV)</option>
+    <option value="OR">Oregon (OR)</option>
+    <option value="UT">Utah (UT)</option>
+    <option value="WA">Washington (WA)</option>
+    <option value="WY">Wyoming (WY)</option>
+  </optgroup>
+  <optgroup label="── TERRITORIES ──">
+    <option value="PR">Puerto Rico (PR)</option>
+  </optgroup>
+</select>
           <select class="gf-select" id="school-naics" style="width:220px;">
             <option value="561720" selected>561720 - Janitorial</option>
             <option value="722310">722310 - Food Service</option>
@@ -314,14 +437,71 @@ tr:hover td{background:#f8f9fc;}
       <!-- TAB: COLLEGES -->
       <div id="geo-colleges" class="geo-panel">
         <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-          <select class="gf-select" id="college-state" style="width:200px;">
-            <option value="NJ" selected>New Jersey</option>
-            <option value="NY">New York</option>
-            <option value="FL">Florida</option>
-            <option value="TX">Texas</option>
-            <option value="CA">California</option>
-            <option value="PA">Pennsylvania</option>
-          </select>
+         
+<select class="gf-select" id="college-state" style="width:200px;">
+  <optgroup label="── NORTHEAST ──">
+    <option value="CT">Connecticut (CT)</option>
+    <option value="DC">Washington DC (DC)</option>
+    <option value="DE">Delaware (DE)</option>
+    <option value="MA">Massachusetts (MA)</option>
+    <option value="MD">Maryland (MD)</option>
+    <option value="ME">Maine (ME)</option>
+    <option value="NH">New Hampshire (NH)</option>
+    <option value="NJ" selected>New Jersey (NJ)</option>
+    <option value="NY">New York (NY)</option>
+    <option value="PA">Pennsylvania (PA)</option>
+    <option value="RI">Rhode Island (RI)</option>
+    <option value="VT">Vermont (VT)</option>
+  </optgroup>
+  <optgroup label="── SOUTH ──">
+    <option value="AL">Alabama (AL)</option>
+    <option value="AR">Arkansas (AR)</option>
+    <option value="FL">Florida (FL)</option>
+    <option value="GA">Georgia (GA)</option>
+    <option value="KY">Kentucky (KY)</option>
+    <option value="LA">Louisiana (LA)</option>
+    <option value="MS">Mississippi (MS)</option>
+    <option value="NC">North Carolina (NC)</option>
+    <option value="OK">Oklahoma (OK)</option>
+    <option value="SC">South Carolina (SC)</option>
+    <option value="TN">Tennessee (TN)</option>
+    <option value="TX">Texas (TX)</option>
+    <option value="VA">Virginia (VA)</option>
+    <option value="WV">West Virginia (WV)</option>
+  </optgroup>
+  <optgroup label="── MIDWEST ──">
+    <option value="IA">Iowa (IA)</option>
+    <option value="IL">Illinois (IL)</option>
+    <option value="IN">Indiana (IN)</option>
+    <option value="KS">Kansas (KS)</option>
+    <option value="MI">Michigan (MI)</option>
+    <option value="MN">Minnesota (MN)</option>
+    <option value="MO">Missouri (MO)</option>
+    <option value="ND">North Dakota (ND)</option>
+    <option value="NE">Nebraska (NE)</option>
+    <option value="OH">Ohio (OH)</option>
+    <option value="SD">South Dakota (SD)</option>
+    <option value="WI">Wisconsin (WI)</option>
+  </optgroup>
+  <optgroup label="── WEST ──">
+    <option value="AK">Alaska (AK)</option>
+    <option value="AZ">Arizona (AZ)</option>
+    <option value="CA">California (CA)</option>
+    <option value="CO">Colorado (CO)</option>
+    <option value="HI">Hawaii (HI)</option>
+    <option value="ID">Idaho (ID)</option>
+    <option value="MT">Montana (MT)</option>
+    <option value="NM">New Mexico (NM)</option>
+    <option value="NV">Nevada (NV)</option>
+    <option value="OR">Oregon (OR)</option>
+    <option value="UT">Utah (UT)</option>
+    <option value="WA">Washington (WA)</option>
+    <option value="WY">Wyoming (WY)</option>
+  </optgroup>
+  <optgroup label="── TERRITORIES ──">
+    <option value="PR">Puerto Rico (PR)</option>
+  </optgroup>
+</select>
           <select class="gf-select" id="college-naics" style="width:220px;">
             <option value="561720" selected>561720 - Janitorial</option>
             <option value="722310">722310 - Food Service</option>
@@ -1075,6 +1255,7 @@ function geoTab(tab) {
 }
 
 // ── LOAD ALL 50 STATES ────────────────────────────────────
+
 async function loadAllStates() {
   const grid = document.getElementById('states-grid');
   grid.innerHTML = `<div class="loading"><div class="spinner"></div><div class="loading-text">Cargando 50 estados...</div></div>`;
@@ -1086,18 +1267,14 @@ async function loadAllStates() {
     allStates = data.states;
     document.getElementById('states-count').textContent = `${allStates.length} estados/territorios`;
 
-    // ★ Llena el dropdown de State Detail con los 50 estados
-    const detailSelect = document.getElementById('detail-state');
-    const currentVal   = detailSelect.value;
-    detailSelect.innerHTML = '<option value="">Selecciona un estado...</option>' +
-      allStates.map(s => `<option value="${s.code}" ${s.code === (currentVal||'NJ') ? 'selected' : ''}>${s.name} (${s.code})</option>`).join('');
+    // ★ YA NO llena el dropdown dinámicamente
+    // El dropdown ya tiene los 50 estados hardcoded en el HTML
 
     renderStates(allStates);
   } catch(e) {
     grid.innerHTML = `<div style="color:#b91c1c;font-size:11px;padding:20px;">❌ ${e.message}</div>`;
   }
 }
-
 // ── RENDER STATE CARDS GRID ───────────────────────────────
 function renderStates(states) {
   const myState = document.getElementById('f-state')?.value || 'NJ';
