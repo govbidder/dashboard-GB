@@ -405,6 +405,8 @@ tr:hover td{background:#f8f9fc;}
     <div class="logo-sub">COMMAND CENTER</div>
     <div class="logo-tag">The Bid That Wins</div>
   </div>
+  <div class="nav-section">HERRAMIENTAS</div>
+  <div class="nav-item" onclick="nav(this,'tools')"><span class="icon">🧰</span>Herramientas</div>
   <div class="nav-section">MAIN</div>
   <div class="nav-item active" onclick="nav(this,'home')"><span class="icon">🏠</span>Home</div>
   <div class="nav-item" onclick="nav(this,'market')"><span class="icon">📊</span>Market Intelligence</div>
@@ -1044,6 +1046,145 @@ tr:hover td{background:#f8f9fc;}
       </div>
     </div>
 
+    <!-- TOOLS -->
+    <div class="page" id="page-tools">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#0a0c14,#152978);border-radius:14px;padding:28px 32px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;opacity:.07;background:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px;"></div>
+        <div style="position:relative;">
+          <div style="font-size:36px;margin-bottom:10px;">🧰</div>
+          <div style="color:#fff;font-size:20px;font-weight:900;margin-bottom:6px;">Herramientas <span style="color:#E42D2C;">GovBidder</span></div>
+          <div style="color:rgba(255,255,255,.5);font-size:12px;max-width:500px;margin:0 auto;line-height:1.7;">
+            El ecosistema completo para operar, analizar y escalar tus contratos con el gobierno de EE. UU.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tools grid -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px;">
+
+        <!-- GovBidder App -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(228,45,44,.12)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
+          <div style="background:linear-gradient(135deg,#E42D2C,#a01e1d);padding:24px;text-align:center;">
+            <div style="font-size:44px;margin-bottom:8px;">⚡</div>
+            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder App</div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">CRM & Operations Hub</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+              Centraliza tu operación de contratos: contactos, oportunidades, pipelines, tareas y seguimiento en un solo lugar. Tu CRM para government contracting.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Pipeline de oportunidades</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Gestión de contactos y clientes</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Seguimiento de tareas y deadlines</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Reportes de performance</div>
+            </div>
+            <a href="https://app.govbidder.net/" target="_blank"
+              style="display:block;text-align:center;background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(228,45,44,.25);">
+              Abrir GovBidder App →
+            </a>
+          </div>
+        </div>
+
+        <!-- GovBidder AI -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(21,41,120,.12)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
+          <div style="background:linear-gradient(135deg,#152978,#1a3090);padding:24px;text-align:center;">
+            <div style="font-size:44px;margin-bottom:8px;">🤖</div>
+            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder AI</div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Inteligencia Artificial para Licitaciones</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+              IA especializada en contratos gubernamentales. Analiza, verifica cumplimiento y acelera la preparación de licitaciones con criterio profesional.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Análisis de RFPs y solicitudes</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Verificación de cumplimiento</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Redacción de propuestas</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Estrategia de pricing</div>
+            </div>
+            <a href="https://govbidder.ai" target="_blank"
+              style="display:block;text-align:center;background:linear-gradient(135deg,#152978,#1a3090);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(21,41,120,.25);">
+              Explorar GovBidder AI →
+            </a>
+          </div>
+        </div>
+
+        <!-- GovBidder Connect -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(22,163,74,.12)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
+          <div style="background:linear-gradient(135deg,#15803d,#16a34a);padding:24px;text-align:center;">
+            <div style="font-size:44px;margin-bottom:8px;">🔗</div>
+            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder Connect</div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Licitaciones en Tiempo Real</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+              Plataforma que muestra licitaciones del gobierno de EE. UU. en tiempo real. Encuentra oportunidades que encajan exactamente con tu empresa y capacidad.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Feed de licitaciones en vivo</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Filtros por industria y estado</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Alertas de nuevas oportunidades</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Match con tu perfil de empresa</div>
+            </div>
+            <a href="https://govbidderconnect.com" target="_blank"
+              style="display:block;text-align:center;background:linear-gradient(135deg,#15803d,#16a34a);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(22,163,74,.25);">
+              Ver GovBidder Connect →
+            </a>
+          </div>
+        </div>
+
+        <!-- GovBidder Academy -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;"
+             onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(200,168,75,.15)'"
+             onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(0,0,0,.06)'">
+          <div style="background:linear-gradient(135deg,#92400e,#c8a84b);padding:24px;text-align:center;">
+            <div style="font-size:44px;margin-bottom:8px;">🎓</div>
+            <div style="color:#fff;font-size:16px;font-weight:900;">GovBidder Academy</div>
+            <div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:4px;">Formación & Entrenamiento</div>
+          </div>
+          <div style="padding:20px;">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+              Formación especializada en contratos gubernamentales. Desde tu primer contrato hasta escalar y ejecutar como profesional con estructura y metodología probada.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Tu Primer Contrato USA</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> GovBidder Bootcamp presencial</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> GovBidder VIP 365</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);"><span style="color:var(--green);font-weight:700;">✓</span> Soporte continuo y mentoring</div>
+            </div>
+            <a href="https://govbidderacademy.com/login" target="_blank"
+              style="display:block;text-align:center;background:linear-gradient(135deg,#92400e,#c8a84b);color:#fff;padding:11px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(200,168,75,.3);">
+              Ir a GovBidder Academy →
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer banner -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <div style="font-size:28px;">🦅</div>
+        <div>
+          <div style="font-size:12px;font-weight:800;color:var(--text);margin-bottom:2px;">¿Necesitas más información sobre alguna herramienta?</div>
+          <div style="font-size:11px;color:var(--muted);">Visita <a href="https://govbidder.net/soluciones" target="_blank" style="color:var(--accent);font-weight:700;">govbidder.net/soluciones</a> o escríbenos a <a href="mailto:club@govbidder.net" style="color:var(--accent);font-weight:700;">club@govbidder.net</a></div>
+        </div>
+        <a href="https://govbidder.net/soluciones" target="_blank"
+          style="margin-left:auto;white-space:nowrap;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;">
+          Ver todas las soluciones →
+        </a>
+      </div>
+
+    </div>
+
     <!-- TASK WORK -->
     <div class="page" id="page-taskwork">
 
@@ -1102,7 +1243,7 @@ let liveOpps = [], liveGrants = [], currentMember = null, allStates = [];
 
 // ── NAVIGATION ────────────────────────────────────────────
 const TITLES = {
-  home:'Home — Command Center', market:'Market Intelligence',
+  home:'Home — Command Center', tools:'Herramientas GovBidder', market:'Market Intelligence',
   opps:'Contract Opportunities', grants:'Grant Intelligence',
   codes:'Code Intelligence', geo:'Buyer Geography',
   compete:'Competitive Intel', pipeline:'Bid Pipeline',
@@ -1342,7 +1483,7 @@ function showMemberLock(page) {
         Únete al club para acceder a trabajos asignados, pipeline de bids,<br>soporte dedicado y el programa Alliance.
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-        <a href="https://govbidder.net/club" target="_blank"
+        <a href="https://www.govbidderclub.com" target="_blank"
           style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;padding:12px 24px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 4px 16px rgba(228,45,44,.3);">
           🦅 Unirme a GovBidder Club →
         </a>
