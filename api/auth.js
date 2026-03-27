@@ -4,6 +4,7 @@ const MEMBERS = [
     name: "Santo González",
     email: "santo@govbidder.net",
     password: "GovBidder2025!",
+    role: "admin",      // admin | member | user
     plan: "Legacy",
     planExpiry: "2026-12-31",
     industry: "Cleaning / Janitorial",
@@ -18,6 +19,7 @@ const MEMBERS = [
     name: "Demo Member",
     email: "demo@govbidderclub.com",
     password: "Demo2025!",
+    role: "member",     // miembro del club — ve Task Work y módulos exclusivos
     plan: "Prime",
     planExpiry: "2026-12-31",
     industry: "IT Services",
@@ -32,6 +34,7 @@ const MEMBERS = [
     name: "Test Elevate",
     email: "elevate@govbidderclub.com",
     password: "Elevate2025!",
+    role: "user",       // usuario regular — NO ve módulos exclusivos
     plan: "Elevate",
     planExpiry: "2026-12-31",
     industry: "Construction",
@@ -63,6 +66,7 @@ function parseToken(token) {
 function safeMember(m) {
   return {
     id: m.id, name: m.name, email: m.email,
+    role: m.role || 'user',
     plan: m.plan, planExpiry: m.planExpiry,
     industry: m.industry, state: m.state,
     naics: m.naics, memberSince: m.memberSince,
