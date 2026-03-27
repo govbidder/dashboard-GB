@@ -156,55 +156,188 @@ tr:hover td{background:#f8f9fc;}
       <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(228,45,44,.4),transparent);margin:20px 0 0;"></div>
     </div>
 
-    <!-- WELCOME -->
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:4px;">Acceso Exclusivo — GovBidder Club</div>
-      <div style="color:rgba(255,255,255,.45);font-size:11px;line-height:1.5;">Sistema privado de inteligencia para miembros activos.<br>Ingresa tus credenciales para continuar.</div>
+    <!-- TABS -->
+    <div style="display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:4px;margin-bottom:22px;gap:4px;">
+      <button id="tab-login-btn" onclick="switchTab('login')"
+        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;">
+        🔑 Ingresar
+      </button>
+      <button id="tab-register-btn" onclick="switchTab('register')"
+        style="flex:1;padding:9px;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:transparent;color:rgba(255,255,255,.5);">
+        ✍️ Registrarse
+      </button>
     </div>
 
-    <!-- FORM -->
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      <!-- EMAIL -->
-      <div>
-        <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">EMAIL DE MIEMBRO</label>
-        <input id="login-email" type="email" placeholder="tu@email.com"
-          onkeydown="if(event.key==='Enter')doLogin()"
-          style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:.2s;"
-          onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
-          onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
-        />
+    <!-- ══ TAB: LOGIN ══ -->
+    <div id="tab-login">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:3px;">Acceso Exclusivo — GovBidder Club</div>
+        <div style="color:rgba(255,255,255,.4);font-size:11px;">Ingresa tus credenciales para continuar.</div>
       </div>
-      <!-- PASSWORD -->
-      <div>
-        <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">CONTRASEÑA</label>
-        <div style="position:relative;">
-          <input id="login-password" type="password" placeholder="••••••••••"
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">EMAIL DE MIEMBRO</label>
+          <input id="login-email" type="email" placeholder="tu@email.com"
             onkeydown="if(event.key==='Enter')doLogin()"
             style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:.2s;"
             onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
             onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
           />
-          <button id="pass-toggle" onclick="togglePass()"
-            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;">👁️</button>
+        </div>
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9.5px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:6px;">CONTRASEÑA</label>
+          <div style="position:relative;">
+            <input id="login-password" type="password" placeholder="••••••••••"
+              onkeydown="if(event.key==='Enter')doLogin()"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:12px 14px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:.2s;"
+              onfocus="this.style.borderColor='rgba(228,45,44,.6)';this.style.background='rgba(255,255,255,.09)'"
+              onblur="this.style.borderColor='rgba(255,255,255,.12)';this.style.background='rgba(255,255,255,.06)'"
+            />
+            <button id="pass-toggle" onclick="togglePass()"
+              style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;">👁️</button>
+          </div>
+        </div>
+        <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11.5px;text-align:center;"></div>
+        <button id="login-btn" onclick="doLogin()"
+          style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:9px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;transition:.2s;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
+          onmouseover="this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.transform='translateY(0)'">
+          <span id="login-btn-text">Ingresar al Command Center →</span>
+        </button>
+        <div style="text-align:center;margin-top:4px;">
+          <a href="mailto:club@govbidder.net" style="color:rgba(255,255,255,.35);font-size:11px;text-decoration:none;">¿Problemas? Escríbenos</a>
         </div>
       </div>
-      <!-- ERROR -->
-      <div id="login-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11.5px;text-align:center;"></div>
-      <!-- BUTTON -->
-      <button id="login-btn" onclick="doLogin()"
-        style="background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;border:none;border-radius:9px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;transition:.2s;letter-spacing:.3px;box-shadow:0 4px 20px rgba(228,45,44,.3);margin-top:4px;"
-        onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 24px rgba(228,45,44,.4)'"
-        onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(228,45,44,.3)'">
-        <span id="login-btn-text">Ingresar al Command Center →</span>
-      </button>
     </div>
 
-    <!-- FOOTER LINKS -->
-    <div style="text-align:center;margin-top:22px;">
-      <div style="color:rgba(255,255,255,.25);font-size:10px;margin-bottom:8px;">¿No eres miembro aún?</div>
-      <a href="https://www.govbidderclub.com" target="_blank" style="color:#E42D2C;font-size:11px;font-weight:700;text-decoration:none;">Únete a GovBidder Club →</a>
-      <span style="color:rgba(255,255,255,.15);margin:0 10px;">|</span>
-      <a href="mailto:club@govbidder.net" style="color:rgba(255,255,255,.35);font-size:11px;text-decoration:none;">¿Problemas? Escríbenos</a>
+    <!-- ══ TAB: REGISTER ══ -->
+    <div id="tab-register" style="display:none;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:3px;">Solicitar Membresía</div>
+        <div style="color:rgba(255,255,255,.4);font-size:11px;">Revisaremos tu solicitud en 24–48 horas.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px;">
+
+        <!-- Fila: Nombre + Empresa -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">NOMBRE *</label>
+            <input id="reg-name" type="text" placeholder="Tu nombre"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+            />
+          </div>
+          <div>
+            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">EMPRESA *</label>
+            <input id="reg-company" type="text" placeholder="Tu empresa"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+            />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">EMAIL *</label>
+          <input id="reg-email" type="email" placeholder="tu@empresa.com"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+          />
+        </div>
+
+        <!-- Teléfono -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">TELÉFONO</label>
+          <input id="reg-phone" type="tel" placeholder="(555) 000-0000"
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+          />
+        </div>
+
+        <!-- Fila: Estado + NAICS -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">ESTADO</label>
+            <select id="reg-state"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;">
+              <option value="" style="background:#1a1f36;">Selecciona...</option>
+              <option value="NJ" style="background:#1a1f36;">New Jersey</option>
+              <option value="NY" style="background:#1a1f36;">New York</option>
+              <option value="FL" style="background:#1a1f36;">Florida</option>
+              <option value="TX" style="background:#1a1f36;">Texas</option>
+              <option value="CA" style="background:#1a1f36;">California</option>
+              <option value="PA" style="background:#1a1f36;">Pennsylvania</option>
+              <option value="GA" style="background:#1a1f36;">Georgia</option>
+              <option value="IL" style="background:#1a1f36;">Illinois</option>
+              <option value="NC" style="background:#1a1f36;">North Carolina</option>
+              <option value="VA" style="background:#1a1f36;">Virginia</option>
+              <option value="MD" style="background:#1a1f36;">Maryland</option>
+              <option value="CT" style="background:#1a1f36;">Connecticut</option>
+              <option value="MA" style="background:#1a1f36;">Massachusetts</option>
+              <option value="OH" style="background:#1a1f36;">Ohio</option>
+              <option value="MI" style="background:#1a1f36;">Michigan</option>
+              <option value="OTHER" style="background:#1a1f36;">Otro estado</option>
+            </select>
+          </div>
+          <div>
+            <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">NAICS CODE</label>
+            <input id="reg-naics" type="text" placeholder="Ej: 561720"
+              style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;transition:.2s;"
+              onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+            />
+          </div>
+        </div>
+
+        <!-- Plan -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">PLAN DE INTERÉS</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+            <label style="cursor:pointer;">
+              <input type="radio" name="reg-plan" value="Elevate" style="display:none;" onchange="selectPlan(this)"/>
+              <div class="plan-opt" id="plan-Elevate" style="background:rgba(228,45,44,.1);border:1px solid rgba(228,45,44,.2);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
+                <div style="color:#fca5a5;font-size:9px;font-weight:800;">ELEVATE</div>
+                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Premium</div>
+              </div>
+            </label>
+            <label style="cursor:pointer;">
+              <input type="radio" name="reg-plan" value="Prime" style="display:none;" onchange="selectPlan(this)"/>
+              <div class="plan-opt" id="plan-Prime" style="background:rgba(21,41,120,.2);border:1px solid rgba(21,41,120,.3);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
+                <div style="color:#93c5fd;font-size:9px;font-weight:800;">PRIME</div>
+                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Avanzado</div>
+              </div>
+            </label>
+            <label style="cursor:pointer;">
+              <input type="radio" name="reg-plan" value="Legacy" style="display:none;" onchange="selectPlan(this)"/>
+              <div class="plan-opt" id="plan-Legacy" style="background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.2);border-radius:8px;padding:8px 6px;text-align:center;transition:.2s;">
+                <div style="color:#fde68a;font-size:9px;font-weight:800;">LEGACY</div>
+                <div style="color:rgba(255,255,255,.4);font-size:8px;margin-top:2px;">Básico</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Mensaje opcional -->
+        <div>
+          <label style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;display:block;margin-bottom:5px;">MENSAJE (OPCIONAL)</label>
+          <textarea id="reg-message" rows="2" placeholder="Cuéntanos sobre tu negocio..."
+            style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none;font-family:inherit;resize:none;transition:.2s;"
+            onfocus="this.style.borderColor='rgba(228,45,44,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"></textarea>
+        </div>
+
+        <!-- Error / Success -->
+        <div id="reg-error" style="display:none;background:rgba(228,45,44,.15);border:1px solid rgba(228,45,44,.3);border-radius:8px;padding:10px 14px;color:#fca5a5;font-size:11px;text-align:center;"></div>
+        <div id="reg-success" style="display:none;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:24px;margin-bottom:6px;">✅</div>
+          <div style="color:#86efac;font-size:13px;font-weight:700;margin-bottom:4px;">¡Solicitud Enviada!</div>
+          <div style="color:rgba(255,255,255,.6);font-size:11px;line-height:1.6;">Revisaremos tu información y te contactaremos en <strong style="color:#fff;">24–48 horas</strong>.</div>
+        </div>
+
+        <!-- Botón submit -->
+        <button id="reg-btn" onclick="doRegister()"
+          style="background:linear-gradient(135deg,#152978,#1a3090);color:#fff;border:none;border-radius:9px;padding:13px;font-size:12px;font-weight:800;cursor:pointer;transition:.2s;margin-top:2px;">
+          <span id="reg-btn-text">Enviar Solicitud →</span>
+        </button>
+      </div>
     </div>
 
     <!-- PLAN BADGES -->
@@ -467,6 +600,7 @@ tr:hover td{background:#f8f9fc;}
         <div class="geo-tab"        id="tab-schools"  onclick="geoTab('schools')">🏫 School Districts</div>
         <div class="geo-tab"        id="tab-colleges" onclick="geoTab('colleges')">🎓 Colleges & Universities</div>
         <div class="geo-tab"        id="tab-detail"   onclick="geoTab('detail')">📊 State Detail</div>
+        <div class="geo-tab"        id="tab-counties" onclick="geoTab('counties')">🏛️ Counties</div>
       </div>
 
       <!-- TAB: 50 STATES -->
@@ -595,6 +729,69 @@ tr:hover td{background:#f8f9fc;}
         </div>
         <div id="colleges-container">
           <div style="text-align:center;padding:40px;color:#6b7a99;">Selecciona un estado y haz clic en "Cargar Universidades"</div>
+        </div>
+      </div>
+
+      <!-- TAB: COUNTIES -->
+      <div id="geo-counties" class="geo-panel">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+          <select class="gf-select" id="county-state" style="width:180px;" onchange="loadCounties()">
+            <optgroup label="NORTHEAST">
+              <option value="CT">Connecticut (CT)</option><option value="DC">Washington DC (DC)</option>
+              <option value="DE">Delaware (DE)</option><option value="MA">Massachusetts (MA)</option>
+              <option value="MD">Maryland (MD)</option><option value="ME">Maine (ME)</option>
+              <option value="NH">New Hampshire (NH)</option><option value="NJ" selected>New Jersey (NJ)</option>
+              <option value="NY">New York (NY)</option><option value="PA">Pennsylvania (PA)</option>
+              <option value="RI">Rhode Island (RI)</option><option value="VT">Vermont (VT)</option>
+            </optgroup>
+            <optgroup label="SOUTH">
+              <option value="AL">Alabama (AL)</option><option value="AR">Arkansas (AR)</option>
+              <option value="FL">Florida (FL)</option><option value="GA">Georgia (GA)</option>
+              <option value="KY">Kentucky (KY)</option><option value="LA">Louisiana (LA)</option>
+              <option value="MS">Mississippi (MS)</option><option value="NC">North Carolina (NC)</option>
+              <option value="OK">Oklahoma (OK)</option><option value="SC">South Carolina (SC)</option>
+              <option value="TN">Tennessee (TN)</option><option value="TX">Texas (TX)</option>
+              <option value="VA">Virginia (VA)</option><option value="WV">West Virginia (WV)</option>
+            </optgroup>
+            <optgroup label="MIDWEST">
+              <option value="IA">Iowa (IA)</option><option value="IL">Illinois (IL)</option>
+              <option value="IN">Indiana (IN)</option><option value="KS">Kansas (KS)</option>
+              <option value="MI">Michigan (MI)</option><option value="MN">Minnesota (MN)</option>
+              <option value="MO">Missouri (MO)</option><option value="ND">North Dakota (ND)</option>
+              <option value="NE">Nebraska (NE)</option><option value="OH">Ohio (OH)</option>
+              <option value="SD">South Dakota (SD)</option><option value="WI">Wisconsin (WI)</option>
+            </optgroup>
+            <optgroup label="WEST">
+              <option value="AK">Alaska (AK)</option><option value="AZ">Arizona (AZ)</option>
+              <option value="CA">California (CA)</option><option value="CO">Colorado (CO)</option>
+              <option value="HI">Hawaii (HI)</option><option value="ID">Idaho (ID)</option>
+              <option value="MT">Montana (MT)</option><option value="NM">New Mexico (NM)</option>
+              <option value="NV">Nevada (NV)</option><option value="OR">Oregon (OR)</option>
+              <option value="UT">Utah (UT)</option><option value="WA">Washington (WA)</option>
+              <option value="WY">Wyoming (WY)</option>
+            </optgroup>
+            <optgroup label="TERRITORIES"><option value="PR">Puerto Rico (PR)</option></optgroup>
+          </select>
+          <select class="gf-select" id="county-naics" style="width:220px;">
+            <option value="561720" selected>561720 - Janitorial</option>
+            <option value="722310">722310 - Food Service</option>
+            <option value="541519">541519 - IT Services</option>
+            <option value="561730">561730 - Landscaping</option>
+            <option value="236220">236220 - Construction</option>
+            <option value="561612">561612 - Security</option>
+            <option value="484110">484110 - Trucking</option>
+            <option value="561710">561710 - Pest Control</option>
+            <option value="562111">562111 - Waste Collection</option>
+          </select>
+          <input id="county-search" class="search-input" placeholder="🔍 Filtrar condado..." oninput="filterCounties(this.value)" style="max-width:200px;"/>
+          <div style="margin-left:auto;font-size:10px;color:#6b7a99;" id="counties-count"></div>
+        </div>
+        <div id="counties-container">
+          <div style="text-align:center;padding:40px;color:#6b7a99;">
+            <div style="font-size:32px;margin-bottom:8px;">🏛️</div>
+            <div style="font-size:13px;font-weight:700;color:#1a1f36;margin-bottom:6px;">Selecciona un estado</div>
+            <div style="font-size:11.5px;">El sistema cargará todos los condados con datos de contratos</div>
+          </div>
         </div>
       </div>
 
@@ -1007,6 +1204,102 @@ function togglePass() {
   if (!inp) return;
   if (inp.type === 'password') { inp.type = 'text';     if (btn) btn.textContent = '🙈'; }
   else                         { inp.type = 'password'; if (btn) btn.textContent = '👁️'; }
+}
+
+// ── LOGIN TABS ────────────────────────────────────────────
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tab-login').style.display     = isLogin ? 'block' : 'none';
+  document.getElementById('tab-register').style.display  = isLogin ? 'none'  : 'block';
+  const btnLogin = document.getElementById('tab-login-btn');
+  const btnReg   = document.getElementById('tab-register-btn');
+  if (isLogin) {
+    btnLogin.style.background = 'linear-gradient(135deg,#E42D2C,#a01e1d)';
+    btnLogin.style.color      = '#fff';
+    btnReg.style.background   = 'transparent';
+    btnReg.style.color        = 'rgba(255,255,255,.5)';
+  } else {
+    btnReg.style.background   = 'linear-gradient(135deg,#E42D2C,#a01e1d)';
+    btnReg.style.color        = '#fff';
+    btnLogin.style.background = 'transparent';
+    btnLogin.style.color      = 'rgba(255,255,255,.5)';
+  }
+}
+
+function selectPlan(radio) {
+  ['Elevate','Prime','Legacy'].forEach(p => {
+    const el = document.getElementById('plan-' + p);
+    if (!el) return;
+    el.style.transform   = 'scale(1)';
+    el.style.borderWidth = '1px';
+    el.style.opacity     = '.7';
+  });
+  const sel = document.getElementById('plan-' + radio.value);
+  if (sel) {
+    sel.style.transform   = 'scale(1.05)';
+    sel.style.borderWidth = '2px';
+    sel.style.opacity     = '1';
+  }
+}
+
+async function doRegister() {
+  const name    = (document.getElementById('reg-name')?.value    || '').trim();
+  const company = (document.getElementById('reg-company')?.value || '').trim();
+  const email   = (document.getElementById('reg-email')?.value   || '').trim();
+  const phone   = (document.getElementById('reg-phone')?.value   || '').trim();
+  const state   = (document.getElementById('reg-state')?.value   || '').trim();
+  const naics   = (document.getElementById('reg-naics')?.value   || '').trim();
+  const message = (document.getElementById('reg-message')?.value || '').trim();
+  const planEl  = document.querySelector('input[name="reg-plan"]:checked');
+  const plan    = planEl ? planEl.value : '';
+
+  const errEl  = document.getElementById('reg-error');
+  const succEl = document.getElementById('reg-success');
+  const btn    = document.getElementById('reg-btn');
+  const btnTxt = document.getElementById('reg-btn-text');
+
+  if (errEl)  errEl.style.display  = 'none';
+  if (succEl) succEl.style.display = 'none';
+
+  if (!name || !company || !email) {
+    if (errEl) { errEl.textContent = 'Nombre, empresa y email son requeridos.'; errEl.style.display = 'block'; }
+    return;
+  }
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    if (errEl) { errEl.textContent = 'Ingresa un email válido.'; errEl.style.display = 'block'; }
+    return;
+  }
+
+  if (btn)    btn.disabled    = true;
+  if (btnTxt) btnTxt.innerHTML = 'Enviando solicitud...';
+
+  try {
+    const res  = await fetch('/api/auth?action=register', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name, company, email, phone, state, naics, plan, message })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      if (succEl) succEl.style.display = 'block';
+      if (btn)    btn.style.display    = 'none';
+      // Limpiar form
+      ['reg-name','reg-company','reg-email','reg-phone','reg-naics','reg-message'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      if (planEl) planEl.checked = false;
+    } else {
+      if (errEl) { errEl.textContent = data.error || 'Error enviando solicitud.'; errEl.style.display = 'block'; }
+      if (btn)    btn.disabled    = false;
+      if (btnTxt) btnTxt.innerHTML = 'Enviar Solicitud →';
+    }
+  } catch(e) {
+    if (errEl) { errEl.textContent = 'Error de conexión. Intenta de nuevo.'; errEl.style.display = 'block'; }
+    if (btn)    btn.disabled    = false;
+    if (btnTxt) btnTxt.innerHTML = 'Enviar Solicitud →';
+  }
 }
 
 function onGlobalFilter() {
