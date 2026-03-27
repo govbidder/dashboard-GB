@@ -416,9 +416,15 @@ tr:hover td{background:#f8f9fc;}
   <div class="nav-section">ANALYZE</div>
   <div class="nav-item" onclick="nav(this,'compete')"><span class="icon">🏆</span>Competitive Intel</div>
   <div class="nav-section">OPERATE</div>
+  <!-- GovBidder Club Member title -->
+  <div style="margin:6px 10px 8px;background:linear-gradient(135deg,rgba(228,45,44,.15),rgba(21,41,120,.15));border:1px solid rgba(228,45,44,.2);border-radius:8px;padding:8px 10px;text-align:center;">
+    <div style="font-size:8px;color:rgba(255,255,255,.35);letter-spacing:1.5px;font-weight:700;">GOVBIDDER CLUB</div>
+    <div style="font-size:9.5px;color:#fff;font-weight:800;margin-top:2px;">⭐ Member Portal</div>
+  </div>
   <div class="nav-item" onclick="nav(this,'pipeline')"><span class="icon">📋</span>Bid Pipeline</div>
   <div class="nav-item" onclick="nav(this,'support')"><span class="icon">🎯</span>Support Desk</div>
   <div class="nav-item" onclick="nav(this,'alliance')"><span class="icon">🤝</span>Funding Access</div>
+  <div class="nav-item" onclick="nav(this,'taskwork')"><span class="icon">💼</span>Task Work</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -1038,6 +1044,38 @@ tr:hover td{background:#f8f9fc;}
       </div>
     </div>
 
+    <!-- TASK WORK -->
+    <div class="page" id="page-taskwork">
+
+      <!-- Header banner -->
+      <div style="background:linear-gradient(135deg,#152978,#1a3090);border-radius:12px;padding:18px 24px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+        <div style="font-size:36px;">💼</div>
+        <div>
+          <div style="color:#fff;font-size:15px;font-weight:800;">Task Work — Bolsa de Trabajos</div>
+          <div style="color:rgba(255,255,255,.6);font-size:11px;margin-top:2px;">Trabajos asignados por GovBidder Club · Solo visible para ti</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="color:rgba(255,255,255,.5);font-size:9px;font-weight:700;letter-spacing:1px;">MIEMBRO</div>
+          <div style="color:#fff;font-size:13px;font-weight:800;" id="tw-member-name">—</div>
+          <div id="tw-plan-badge" style="margin-top:4px;display:inline-block;background:rgba(200,168,75,.25);color:#fde68a;font-size:8.5px;font-weight:800;padding:2px 10px;border-radius:10px;border:1px solid rgba(200,168,75,.3);">⭐ LEGACY</div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;" id="tw-kpis">
+        <div class="kpi-card"><div class="kpi-label">TOTAL TRABAJOS</div><div class="kpi-value" id="tw-total">—</div><div class="kpi-delta" style="color:var(--muted)">asignados</div></div>
+        <div class="kpi-card"><div class="kpi-label">ACTIVOS</div><div class="kpi-value" style="color:var(--green)" id="tw-active">—</div><div class="kpi-delta delta-up">en progreso</div></div>
+        <div class="kpi-card"><div class="kpi-label">COMPLETADOS</div><div class="kpi-value" id="tw-done">—</div><div class="kpi-delta" style="color:var(--muted)">finalizados</div></div>
+        <div class="kpi-card"><div class="kpi-label">VALOR TOTAL</div><div class="kpi-value" style="font-size:18px;" id="tw-value">—</div><div class="kpi-delta delta-up">en contratos</div></div>
+      </div>
+
+      <!-- Job cards -->
+      <div id="tw-jobs-container">
+        <div class="loading"><div class="spinner"></div><div class="loading-text">Cargando trabajos...</div></div>
+      </div>
+
+    </div>
+
   </div><!-- /#content -->
 </div><!-- /#main -->
 
@@ -1068,7 +1106,7 @@ const TITLES = {
   opps:'Contract Opportunities', grants:'Grant Intelligence',
   codes:'Code Intelligence', geo:'Buyer Geography',
   compete:'Competitive Intel', pipeline:'Bid Pipeline',
-  support:'Support Desk', alliance:'Funding Access'
+  support:'Support Desk', alliance:'Funding Access', taskwork:'Task Work — Mis Trabajos'
 };
 
 function nav(el, page) {
@@ -1080,6 +1118,7 @@ function nav(el, page) {
   if (page === 'market')  fetchMarket();
   if (page === 'geo')     { geoTab('states'); }
   if (page === 'compete') fetchCompetitors();
+  if (page === 'taskwork') loadTaskWork();
 }
 
 // ── AUTH ──────────────────────────────────────────────────
@@ -2033,6 +2072,200 @@ function calcAlliance() {
     📈 Tu ganancia (${margin}%): $${gan.toLocaleString()}<br>
     🤝 Fee (20%): $${fee.toLocaleString()}<br>
     <strong style="color:var(--green)">💰 Utilidad neta: $${neta.toLocaleString()}</strong>`;
+}
+
+// ── TASK WORK DATA ───────────────────────────────────────
+// Cada entrada está asociada a un member id
+// Para agregar trabajos: copia el bloque y cambia el memberId
+const TASK_WORK_DB = [
+  {
+    id: "tw-001",
+    memberId: "001",  // Santo González
+    title: "Limpieza Diaria — Edificio Federal Newark",
+    client: "GSA — General Services Administration",
+    status: "Activo",
+    value: 48000,
+    startDate: "2025-01-15",
+    endDate: "2025-12-31",
+    description: "Servicios de limpieza y mantenimiento diario para edificio federal de 4 pisos en Newark, NJ. Incluye áreas comunes, baños y oficinas.",
+    documents: [
+      { name: "Contrato Firmado", url: "https://drive.google.com/file/d/example1" },
+      { name: "Scope of Work", url: "https://drive.google.com/file/d/example2" },
+      { name: "Certificado de Seguro", url: "https://drive.google.com/file/d/example3" }
+    ]
+  },
+  {
+    id: "tw-002",
+    memberId: "001",  // Santo González
+    title: "Custodial Services — Trenton State Office",
+    client: "NJ Dept. of Treasury",
+    status: "Pendiente",
+    value: 22500,
+    startDate: "2025-04-01",
+    endDate: "2025-09-30",
+    description: "Servicios de limpieza para oficinas estatales en Trenton. Inicio pendiente de aprobación final de documentos.",
+    documents: [
+      { name: "Propuesta Técnica", url: "https://drive.google.com/file/d/example4" }
+    ]
+  },
+  {
+    id: "tw-003",
+    memberId: "001",  // Santo González
+    title: "Janitorial — Edison Municipal Building",
+    client: "Township of Edison",
+    status: "Completado",
+    value: 18750,
+    startDate: "2024-07-01",
+    endDate: "2024-12-31",
+    description: "Servicio de limpieza completado exitosamente. Contrato renovado para 2025.",
+    documents: [
+      { name: "Contrato Final", url: "https://drive.google.com/file/d/example5" },
+      { name: "Factura Final", url: "https://drive.google.com/file/d/example6" }
+    ]
+  },
+  // Demo Member (id: 002)
+  {
+    id: "tw-004",
+    memberId: "002",
+    title: "IT Support Services — NYC Agency",
+    client: "NYC Department of Education",
+    status: "Activo",
+    value: 95000,
+    startDate: "2025-02-01",
+    endDate: "2025-12-31",
+    description: "Soporte técnico y mantenimiento de infraestructura IT para agencia municipal de NYC.",
+    documents: [
+      { name: "Contrato Principal", url: "https://drive.google.com/file/d/example7" }
+    ]
+  },
+  // Test Elevate (id: 003)
+  {
+    id: "tw-005",
+    memberId: "003",
+    title: "Renovation — Broward County Facility",
+    client: "Broward County Government",
+    status: "Activo",
+    value: 175000,
+    startDate: "2025-03-01",
+    endDate: "2025-08-31",
+    description: "Renovación de instalaciones del condado incluyendo remodelación de áreas administrativas.",
+    documents: [
+      { name: "Planos Aprobados", url: "https://drive.google.com/file/d/example8" },
+      { name: "Permiso de Construcción", url: "https://drive.google.com/file/d/example9" }
+    ]
+  }
+];
+
+function loadTaskWork() {
+  if (!currentMember) return;
+
+  // Filter jobs for this member
+  const jobs = TASK_WORK_DB.filter(j => j.memberId === currentMember.id);
+
+  // Update member info in header
+  const twName = document.getElementById('tw-member-name');
+  const twPlan = document.getElementById('tw-plan-badge');
+  if (twName) twName.textContent = currentMember.name || '—';
+  if (twPlan) {
+    const planColors = { Legacy:'rgba(200,168,75,.25);color:#fde68a;border:1px solid rgba(200,168,75,.3)', Prime:'rgba(21,41,120,.3);color:#93c5fd;border:1px solid rgba(93,130,253,.3)', Elevate:'rgba(228,45,44,.2);color:#fca5a5;border:1px solid rgba(228,45,44,.3)' };
+    twPlan.style.cssText = `display:inline-block;background:${planColors[currentMember.plan]||planColors.Elevate};font-size:8.5px;font-weight:800;padding:2px 10px;border-radius:10px;`;
+    twPlan.textContent = '⭐ ' + (currentMember.plan||'').toUpperCase();
+  }
+
+  // KPIs
+  const active    = jobs.filter(j => j.status === 'Activo').length;
+  const done      = jobs.filter(j => j.status === 'Completado').length;
+  const totalVal  = jobs.reduce((s,j) => s + (j.value||0), 0);
+  const twTotal   = document.getElementById('tw-total');
+  const twActive  = document.getElementById('tw-active');
+  const twDone    = document.getElementById('tw-done');
+  const twValue   = document.getElementById('tw-value');
+  if (twTotal)  twTotal.textContent  = jobs.length;
+  if (twActive) twActive.textContent = active;
+  if (twDone)   twDone.textContent   = done;
+  if (twValue)  twValue.textContent  = '$' + totalVal.toLocaleString();
+
+  const el = document.getElementById('tw-jobs-container');
+  if (!el) return;
+
+  if (!jobs.length) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:var(--muted);">
+        <div style="font-size:48px;margin-bottom:12px;">💼</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">No tienes trabajos asignados aún</div>
+        <div style="font-size:11.5px;">GovBidder Club te asignará trabajos cuando estén disponibles.<br>Contacta a <a href="mailto:club@govbidder.net" style="color:var(--accent);">club@govbidder.net</a> para más información.</div>
+      </div>`;
+    return;
+  }
+
+  const STATUS_STYLE = {
+    'Activo':     { bg:'#dcfce7', color:'#15803d', dot:'#16a34a' },
+    'Pendiente':  { bg:'#fef3c7', color:'#92400e', dot:'#d97706' },
+    'Completado': { bg:'#f1f5f9', color:'#475569', dot:'#94a3b8' }
+  };
+
+  el.innerHTML = jobs.map(j => {
+    const st  = STATUS_STYLE[j.status] || STATUS_STYLE['Pendiente'];
+    const sd  = new Date(j.startDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const ed  = new Date(j.endDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const now = Date.now();
+    const end = new Date(j.endDate).getTime();
+    const daysLeft = Math.ceil((end - now) / 864e5);
+    const isUrgent = j.status === 'Activo' && daysLeft <= 30 && daysLeft > 0;
+
+    const docs = (j.documents||[]).map(d => `
+      <a href="${d.url}" target="_blank"
+        style="display:inline-flex;align-items:center;gap:5px;background:#f8f9fc;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;color:var(--text);text-decoration:none;transition:.15s;"
+        onmouseover="this.style.borderColor='#E42D2C';this.style.color='#E42D2C'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+        📄 ${d.name}
+      </a>`).join('');
+
+    return `
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:0;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;transition:.2s;"
+           onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,.05)'">
+
+        <!-- Card header -->
+        <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #f4f6fb;">
+          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#152978,#1a3090);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💼</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;">${j.title}</div>
+            <div style="font-size:11px;color:var(--muted);">🏛️ ${j.client}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:18px;font-weight:900;color:var(--text);">$${j.value.toLocaleString()}</div>
+            <div style="font-size:9.5px;color:var(--muted);margin-top:1px;">valor del contrato</div>
+          </div>
+        </div>
+
+        <!-- Card body -->
+        <div style="padding:16px 20px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
+            <!-- Status badge -->
+            <span style="display:inline-flex;align-items:center;gap:5px;background:${st.bg};color:${st.color};font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:${st.dot};display:inline-block;"></span>
+              ${j.status}
+            </span>
+            <!-- Dates -->
+            <span style="font-size:10px;color:var(--muted);">📅 ${sd} → ${ed}</span>
+            <!-- Days left -->
+            ${j.status === 'Activo' ? `<span style="font-size:10px;font-weight:700;color:${isUrgent?'var(--accent)':'var(--muted)'};">${isUrgent?'⚠️':''} ${daysLeft > 0 ? daysLeft+' días restantes' : 'Vencido'}</span>` : ''}
+          </div>
+
+          <!-- Description -->
+          <div style="font-size:11px;color:#6b7a99;line-height:1.7;margin-bottom:14px;background:#f8f9fc;border-radius:8px;padding:10px 14px;">
+            ${j.description}
+          </div>
+
+          <!-- Documents -->
+          ${docs ? `
+          <div>
+            <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">📎 DOCUMENTOS</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">${docs}</div>
+          </div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
 }
 
 // ── INIT ─────────────────────────────────────────────────
