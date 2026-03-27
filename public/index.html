@@ -252,6 +252,15 @@ tr:hover td{background:#f8f9fc;}
     <div class="page-title" id="ptitle">Home — Command Center</div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
 
+      <!-- Global State filter -->
+      <select class="gf-select" id="f-state" onchange="onGlobalFilter()">
+        <optgroup label="NORTHEAST"><option value="CT">CT</option><option value="DC">DC</option><option value="DE">DE</option><option value="MA">MA</option><option value="MD">MD</option><option value="ME">ME</option><option value="NH">NH</option><option value="NJ" selected>NJ</option><option value="NY">NY</option><option value="PA">PA</option><option value="RI">RI</option><option value="VT">VT</option></optgroup>
+        <optgroup label="SOUTH"><option value="AL">AL</option><option value="AR">AR</option><option value="FL">FL</option><option value="GA">GA</option><option value="KY">KY</option><option value="LA">LA</option><option value="MS">MS</option><option value="NC">NC</option><option value="OK">OK</option><option value="SC">SC</option><option value="TN">TN</option><option value="TX">TX</option><option value="VA">VA</option><option value="WV">WV</option></optgroup>
+        <optgroup label="MIDWEST"><option value="IA">IA</option><option value="IL">IL</option><option value="IN">IN</option><option value="KS">KS</option><option value="MI">MI</option><option value="MN">MN</option><option value="MO">MO</option><option value="ND">ND</option><option value="NE">NE</option><option value="OH">OH</option><option value="SD">SD</option><option value="WI">WI</option></optgroup>
+        <optgroup label="WEST"><option value="AK">AK</option><option value="AZ">AZ</option><option value="CA">CA</option><option value="CO">CO</option><option value="HI">HI</option><option value="ID">ID</option><option value="MT">MT</option><option value="NM">NM</option><option value="NV">NV</option><option value="OR">OR</option><option value="UT">UT</option><option value="WA">WA</option><option value="WY">WY</option></optgroup>
+        <optgroup label="TERRITORIES"><option value="PR">PR</option></optgroup>
+      </select>
+
       <!-- Global NAICS filter (datalist input) -->
       <input
         id="f-naics"
@@ -356,8 +365,8 @@ tr:hover td{background:#f8f9fc;}
       <div class="kpi-grid">
         <div class="kpi-card"><div class="kpi-label">LIVE OPPS</div><div class="kpi-value" id="kpi-opps">—</div><div class="kpi-delta delta-up" id="kpi-opps-d">SAM.gov</div></div>
         <div class="kpi-card"><div class="kpi-label">GRANTS</div><div class="kpi-value" id="kpi-grants">—</div><div class="kpi-delta delta-up" id="kpi-grants-d">Grants.gov</div></div>
-        <div class="kpi-card"><div class="kpi-label">NAICS</div><div class="kpi-value" style="font-size:16px;">561720</div><div class="kpi-delta" style="color:var(--muted)">Janitorial</div></div>
-        <div class="kpi-card"><div class="kpi-label">ESTADO</div><div class="kpi-value" style="font-size:16px;">NJ</div><div class="kpi-delta" style="color:var(--muted)">New Jersey</div></div>
+        <div class="kpi-card"><div class="kpi-label">NAICS</div><div class="kpi-value" style="font-size:16px;" id="kpi-naics">561720</div><div class="kpi-delta" style="color:var(--muted)" id="kpi-naics-desc">Janitorial</div></div>
+        <div class="kpi-card"><div class="kpi-label">ESTADO</div><div class="kpi-value" style="font-size:16px;" id="kpi-state">NJ</div><div class="kpi-delta" style="color:var(--muted)" id="kpi-state-desc">New Jersey</div></div>
         <div class="kpi-card"><div class="kpi-label">BIDS ACTIVOS</div><div class="kpi-value">3</div><div class="kpi-delta" style="color:var(--muted)">en pipeline</div></div>
         <div class="kpi-card"><div class="kpi-label">WIN RATE</div><div class="kpi-value">36%</div><div class="kpi-delta delta-up">↑ 4 ganados</div></div>
       </div>
@@ -1000,7 +1009,43 @@ function togglePass() {
   else                         { inp.type = 'password'; if (btn) btn.textContent = '👁️'; }
 }
 
-function onGlobalFilter() { /* hook para filtros globales futuros */ }
+function onGlobalFilter() {
+  const naicsVal = (document.getElementById('f-naics')?.value || '').trim();
+  const stateVal = document.getElementById('f-state')?.value || 'NJ';
+
+  // ── Update NAICS KPI card ──
+  const naicsKpi  = document.getElementById('kpi-naics');
+  const naicsDesc = document.getElementById('kpi-naics-desc');
+  if (naicsKpi) naicsKpi.textContent = naicsVal || '—';
+  if (naicsDesc) {
+    // Try to find a label from the datalist
+    const opt = document.querySelector(`#naics-suggestions option[value="${naicsVal}"]`);
+    if (opt) {
+      const label = opt.value + ' — ' + opt.textContent.replace(naicsVal + ' - ', '').substring(0, 18);
+      naicsDesc.textContent = opt.textContent.replace(naicsVal + ' - ', '').substring(0, 20);
+    } else {
+      naicsDesc.textContent = naicsVal ? 'Código personalizado' : 'Sin selección';
+    }
+  }
+
+  // ── Update STATE KPI card ──
+  const stateKpi  = document.getElementById('kpi-state');
+  const stateDesc = document.getElementById('kpi-state-desc');
+  const STATE_NAMES = {
+    AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',
+    CO:'Colorado',CT:'Connecticut',DC:'Washington DC',DE:'Delaware',FL:'Florida',
+    GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',
+    KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',
+    MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',
+    MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',
+    NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',
+    OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',
+    SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',
+    VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming',PR:'Puerto Rico'
+  };
+  if (stateKpi)  stateKpi.textContent  = stateVal || '—';
+  if (stateDesc) stateDesc.textContent = STATE_NAMES[stateVal] || stateVal;
+}
 
 // ── SAM.GOV ──────────────────────────────────────────────
 async function fetchOpps() {
