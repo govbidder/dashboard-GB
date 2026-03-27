@@ -1,4 +1,3 @@
-
 const MEMBERS = [
   {
     id: "001",
@@ -71,6 +70,30 @@ function safeMember(m) {
   };
 }
 
+// ── SEND EMAIL VIA RESEND ─────────────────────────────────
+async function sendEmail({ to, subject, html }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error('RESEND_API_KEY no configurada en Vercel');
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'GovBidder Club <noreply@govbidder.net>',
+      to,
+      subject,
+      html
+    })
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Error enviando email');
+  return data;
+}
+
 export default async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -84,9 +107,7 @@ export default async function handler(req, res) {
 
     // ── LOGIN ───────────────────────────────────────────
     if (action === 'login') {
-      // Acepta body tanto de POST como query params (fallback)
       let email = '', password = '';
-
       if (req.method === 'POST' && req.body) {
         email    = (req.body.email    || '').trim().toLowerCase();
         password = (req.body.password || '');
@@ -157,7 +178,147 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true });
     }
 
-    // ── TEST — para verificar que el endpoint funciona ──
+    // ── REGISTER ─────────────────────────────────────────
+    if (action === 'register') {
+      if (req.method !== 'POST') {
+        return res.status(405).json({ success: false, error: 'Método no permitido' });
+      }
+
+      const {
+        name, company, email, phone,
+        state, naics, plan, message
+      } = req.body || {};
+
+      // Validaciones básicas
+      if (!name || !email || !company) {
+        return res.status(400).json({
+          success: false,
+          error: 'Nombre, empresa y email son requeridos'
+        });
+      }
+
+      // Verificar que el email no esté ya registrado
+      const exists = MEMBERS.find(m => m.email.toLowerCase() === email.trim().toLowerCase());
+      if (exists) {
+        return res.status(409).json({
+          success: false,
+          error: 'Este email ya está registrado. Intenta iniciar sesión.'
+        });
+      }
+
+      const submittedAt = new Date().toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        dateStyle: 'full',
+        timeStyle: 'short'
+      });
+
+      // ── Email a club@govbidder.net ──
+      const adminHtml = `
+        <div style="font-family:'Segoe UI',sans-serif;max-width:600px;margin:0 auto;background:#f4f6fb;padding:24px;">
+          <div style="background:linear-gradient(135deg,#152978,#0f1e5c);border-radius:12px 12px 0 0;padding:24px;text-align:center;">
+            <div style="font-size:32px;margin-bottom:8px;">🦅</div>
+            <div style="color:#fff;font-size:20px;font-weight:900;">GOV<span style="color:#E42D2C;">BIDDER</span> CLUB</div>
+            <div style="color:rgba(255,255,255,.6);font-size:11px;letter-spacing:2px;margin-top:4px;">NUEVA SOLICITUD DE MEMBRESÍA</div>
+          </div>
+          <div style="background:#fff;border-radius:0 0 12px 12px;padding:24px;border:1px solid #e2e6f0;border-top:none;">
+            <table style="width:100%;border-collapse:collapse;">
+              <tr><td colspan="2" style="padding:0 0 14px;"><div style="background:#eef2ff;border-left:4px solid #E42D2C;border-radius:6px;padding:10px 14px;font-size:13px;font-weight:700;color:#152978;">📋 Datos del Solicitante</div></td></tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:10px 8px;font-size:11px;color:#6b7a99;font-weight:700;width:140px;">NOMBRE</td>
+                <td style="padding:10px 8px;font-size:13px;color:#1a1f36;font-weight:600;">${name}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:10px 8px;font-size:11px;color:#6b7a99;font-weight:700;">EMPRESA</td>
+                <td style="padding:10px 8px;font-size:13px;color:#1a1f36;font-weight:600;">${company}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:10px 8px;font-size:11px;color:#6b7a99;font-weight:700;">EMAIL</td>
+                <td style="padding:10px 8px;font-size:13px;color:#E42D2C;font-weight:600;">${email}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:10px 8px;font-size:11px;color:#6b7a99;font-weight:700;">TELÉFONO</td>
+                <td style="padding:10px 8px;font-size:13px;color:#1a1f36;">${phone || 'No proporcionado'}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:10px 8px;font-size:11px;color:#6b7a99;font-weight:700;">ESTADO</td>
+                <td style="padding:10px 8px;font-size:13px;color:#1a1f36;">${state || 'No especificado'}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:10px 8px;font-size:11px;color:#6b7a99;font-weight:700;">NAICS</td>
+                <td style="padding:10px 8px;font-size:13px;color:#1a1f36;">${naics || 'No especificado'}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:10px 8px;font-size:11px;color:#6b7a99;font-weight:700;">PLAN SOLICITADO</td>
+                <td style="padding:10px 8px;">
+                  <span style="background:${plan==='Elevate'?'#fee2e2':plan==='Prime'?'#dbeafe':'#fef3c7'};color:${plan==='Elevate'?'#b91c1c':plan==='Prime'?'#1d4ed8':'#92400e'};font-size:11px;font-weight:800;padding:3px 12px;border-radius:10px;">${plan || 'No especificado'}</span>
+                </td>
+              </tr>
+              ${message ? `<tr><td style="padding:10px 8px;font-size:11px;color:#6b7a99;font-weight:700;vertical-align:top;">MENSAJE</td><td style="padding:10px 8px;font-size:12px;color:#374151;line-height:1.6;">${message}</td></tr>` : ''}
+            </table>
+
+            <div style="margin-top:20px;background:#f8f9fc;border-radius:8px;padding:14px;font-size:11px;color:#6b7a99;">
+              📅 Solicitud recibida: <strong>${submittedAt} EST</strong>
+            </div>
+
+            <div style="margin-top:16px;padding:14px;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;font-size:12px;color:#b91c1c;font-weight:600;">
+              ⚡ Acción requerida: Agrega manualmente al miembro en <code>api/auth.js</code> para activar su acceso.
+            </div>
+          </div>
+        </div>
+      `;
+
+      // ── Email de confirmación al solicitante ──
+      const userHtml = `
+        <div style="font-family:'Segoe UI',sans-serif;max-width:600px;margin:0 auto;background:#f4f6fb;padding:24px;">
+          <div style="background:linear-gradient(135deg,#0a0c14,#0f1e5c);border-radius:12px 12px 0 0;padding:32px;text-align:center;">
+            <div style="font-size:40px;margin-bottom:10px;">🦅</div>
+            <div style="color:#fff;font-size:22px;font-weight:900;">GOV<span style="color:#E42D2C;">BIDDER</span> CLUB</div>
+            <div style="color:rgba(255,255,255,.5);font-size:10px;letter-spacing:3px;margin-top:4px;">COMMAND CENTER</div>
+          </div>
+          <div style="background:#fff;border-radius:0 0 12px 12px;padding:28px;border:1px solid #e2e6f0;border-top:none;text-align:center;">
+            <div style="font-size:48px;margin-bottom:12px;">⏳</div>
+            <div style="font-size:18px;font-weight:800;color:#1a1f36;margin-bottom:8px;">¡Solicitud Recibida!</div>
+            <div style="font-size:13px;color:#6b7a99;line-height:1.7;margin-bottom:20px;">
+              Hola <strong>${name}</strong>, hemos recibido tu solicitud para unirte a <strong>GovBidder Club</strong>.<br>
+              Nuestro equipo la revisará y te contactará en las próximas <strong>24–48 horas</strong>.
+            </div>
+            <div style="background:#eef2ff;border-radius:10px;padding:16px;margin-bottom:20px;text-align:left;">
+              <div style="font-size:10px;font-weight:700;color:#6b7a99;letter-spacing:1px;margin-bottom:10px;">TU SOLICITUD</div>
+              <div style="font-size:12px;color:#374151;line-height:2;">
+                📛 <strong>${name}</strong> — ${company}<br>
+                📧 ${email}<br>
+                🗺️ ${state || '—'} · NAICS ${naics || '—'}<br>
+                ⭐ Plan solicitado: <strong>${plan || '—'}</strong>
+              </div>
+            </div>
+            <a href="https://www.govbidderclub.com" style="display:inline-block;background:linear-gradient(135deg,#E42D2C,#a01e1d);color:#fff;padding:12px 28px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;">Visitar GovBidder Club →</a>
+            <div style="margin-top:20px;font-size:11px;color:#6b7a99;">
+              ¿Preguntas? Escríbenos a <a href="mailto:club@govbidder.net" style="color:#E42D2C;">club@govbidder.net</a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Enviar ambos emails
+      await sendEmail({
+        to: 'club@govbidder.net',
+        subject: `🦅 Nueva Solicitud de Membresía — ${name} (${company})`,
+        html: adminHtml
+      });
+
+      await sendEmail({
+        to: email.trim(),
+        subject: '✅ GovBidder Club — Solicitud recibida, en revisión',
+        html: userHtml
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Solicitud enviada. Revisaremos tu información en 24-48 horas.'
+      });
+    }
+
+    // ── TEST ─────────────────────────────────────────────
     if (action === 'test') {
       return res.status(200).json({
         success: true,
