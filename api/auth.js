@@ -322,6 +322,96 @@ export default async function handler(req, res) {
       });
     }
 
+    // ── ALLIANCE APPLICATION ─────────────────────────────────
+    if (action === 'alliance') {
+      if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Método no permitido' });
+
+      const { name, company, po, cost, status, desc, memberEmail, memberPlan, apoyo, neta } = req.body || {};
+
+      if (!name || !company || !po || !cost || !status || !desc) {
+        return res.status(400).json({ success: false, error: 'Todos los campos son requeridos' });
+      }
+
+      const submittedAt = new Date().toLocaleString('en-US', {
+        timeZone: 'America/New_York', dateStyle: 'full', timeStyle: 'short'
+      });
+
+      const html = `
+        <div style="font-family:'Segoe UI',sans-serif;max-width:600px;margin:0 auto;background:#f4f6fb;padding:24px;">
+          <div style="background:linear-gradient(135deg,#152978,#0f1e5c);border-radius:12px 12px 0 0;padding:24px;text-align:center;">
+            <div style="font-size:32px;margin-bottom:8px;">🤝</div>
+            <div style="color:#fff;font-size:20px;font-weight:900;">GOV<span style="color:#E42D2C;">BIDDER</span> ALLIANCE</div>
+            <div style="color:rgba(255,255,255,.6);font-size:11px;letter-spacing:2px;margin-top:4px;">NUEVA SOLICITUD DE FONDOS</div>
+          </div>
+          <div style="background:#fff;border-radius:0 0 12px 12px;padding:24px;border:1px solid #e2e6f0;border-top:none;">
+            <table style="width:100%;border-collapse:collapse;">
+              <tr><td colspan="2" style="padding:0 0 14px;">
+                <div style="background:#eef2ff;border-left:4px solid #E42D2C;border-radius:6px;padding:10px 14px;font-size:13px;font-weight:700;color:#152978;">📋 Datos del Solicitante</div>
+              </td></tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;width:160px;">NOMBRE</td>
+                <td style="padding:9px 8px;font-size:13px;color:#1a1f36;font-weight:600;">${name}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;">EMPRESA</td>
+                <td style="padding:9px 8px;font-size:13px;color:#1a1f36;font-weight:600;">${company}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;">EMAIL MIEMBRO</td>
+                <td style="padding:9px 8px;font-size:13px;color:#E42D2C;font-weight:600;">${memberEmail}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;">PLAN</td>
+                <td style="padding:9px 8px;">
+                  <span style="background:#fef3c7;color:#92400e;font-size:11px;font-weight:800;padding:2px 10px;border-radius:10px;">${memberPlan}</span>
+                </td>
+              </tr>
+              <tr><td colspan="2" style="padding:14px 0 10px;">
+                <div style="background:#eef2ff;border-left:4px solid #152978;border-radius:6px;padding:10px 14px;font-size:13px;font-weight:700;color:#152978;">💰 Detalles del Contrato</div>
+              </td></tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;">VALOR PO</td>
+                <td style="padding:9px 8px;font-size:15px;font-weight:900;color:#1a1f36;">$${Number(po).toLocaleString()}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;">COSTO PRODUCTOS</td>
+                <td style="padding:9px 8px;font-size:15px;font-weight:900;color:#1a1f36;">$${Number(cost).toLocaleString()}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;">GOVBIDDER APORTA</td>
+                <td style="padding:9px 8px;font-size:14px;font-weight:800;color:#152978;">$${apoyo}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;">UTILIDAD NETA</td>
+                <td style="padding:9px 8px;font-size:14px;font-weight:800;color:#16a34a;">$${neta}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f4f6fb;">
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;">ESTADO</td>
+                <td style="padding:9px 8px;font-size:12px;font-weight:700;color:#1a1f36;">${status}</td>
+              </tr>
+              <tr>
+                <td style="padding:9px 8px;font-size:11px;color:#6b7a99;font-weight:700;vertical-align:top;">DESCRIPCIÓN</td>
+                <td style="padding:9px 8px;font-size:12px;color:#374151;line-height:1.6;">${desc}</td>
+              </tr>
+            </table>
+            <div style="margin-top:16px;background:#f8f9fc;border-radius:8px;padding:12px;font-size:11px;color:#6b7a99;">
+              📅 Solicitud recibida: <strong>${submittedAt} EST</strong>
+            </div>
+            <div style="margin-top:12px;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:12px;font-size:12px;color:#b91c1c;font-weight:600;">
+              ⚡ Acción requerida: Revisar elegibilidad del miembro y contactar en 24-48 horas.
+            </div>
+          </div>
+        </div>`;
+
+      await sendEmail({
+        to: 'club@govbidder.net',
+        subject: `🤝 Solicitud Alliance — ${name} (${company}) · PO: $${Number(po).toLocaleString()}`,
+        html
+      });
+
+      return res.status(200).json({ success: true, message: 'Solicitud enviada correctamente.' });
+    }
+
     // ── TEST ─────────────────────────────────────────────
     if (action === 'test') {
       return res.status(200).json({
