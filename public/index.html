@@ -1017,7 +1017,25 @@ tr:hover td{background:#f8f9fc;}
 
     <!-- ALLIANCE -->
     <div class="page" id="page-alliance">
-      <div class="grid-2b">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#0a0c14,#152978);border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;">
+        <div style="font-size:36px;">🤝</div>
+        <div>
+          <div style="color:#fff;font-size:15px;font-weight:800;">GovBidder Alliance — Programa de Fondos</div>
+          <div style="color:rgba(255,255,255,.55);font-size:11px;margin-top:3px;line-height:1.6;">Financiamiento de Purchase Orders para miembros activos.<br>GovBidder aporta hasta el 90% del costo de mercancía.</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="background:rgba(200,168,75,.2);border:1px solid rgba(200,168,75,.3);border-radius:8px;padding:6px 14px;">
+            <div style="color:#fde68a;font-size:9px;font-weight:700;letter-spacing:1px;">FEE PROGRAMA</div>
+            <div style="color:#fff;font-size:18px;font-weight:900;">20%</div>
+            <div style="color:rgba(255,255,255,.5);font-size:9px;">de ganancia neta</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top row: Estado + Calculadora -->
+      <div class="grid-2b" style="margin-bottom:18px;">
         <div class="card">
           <div class="card-title">📊 Mi Estado Alliance</div>
           <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;">
@@ -1039,6 +1057,100 @@ tr:hover td{background:#f8f9fc;}
           </div>
         </div>
       </div>
+
+      <!-- Application Form -->
+      <div class="card">
+        <div class="card-title" style="font-size:13px;">
+          📋 Solicitar Apoyo Alliance
+          <span class="sub">Completa el formulario — te contactaremos en 24-48 hrs</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+          <!-- Left column -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">NOMBRE COMPLETO *</label>
+              <input id="alliance-name" class="search-input" placeholder="Tu nombre completo..." style="width:100%;"/>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">EMPRESA *</label>
+              <input id="alliance-company" class="search-input" placeholder="Nombre de tu empresa..." style="width:100%;"/>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">VALOR DE LA PO *</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;">$</span>
+                <input id="alliance-po" class="search-input" type="number" placeholder="0.00" style="width:100%;padding-left:24px;"/>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">COSTO DE PRODUCTOS/SERVICIOS *</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;">$</span>
+                <input id="alliance-cost" class="search-input" type="number" placeholder="0.00" style="width:100%;padding-left:24px;"/>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">ESTADO DEL CONTRATO *</label>
+              <select id="alliance-status" class="search-input" style="width:100%;cursor:pointer;">
+                <option value="">Selecciona...</option>
+                <option value="Ganado — listo para ejecutar">✅ Ganado — listo para ejecutar</option>
+                <option value="Activo — en ejecución">🔄 Activo — en ejecución</option>
+                <option value="Pendiente — esperando award">⏳ Pendiente — esperando award</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Right column -->
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <div style="flex:1;">
+              <label style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.8px;display:block;margin-bottom:4px;">DESCRIPCIÓN DEL CONTRATO *</label>
+              <textarea id="alliance-desc" rows="5"
+                style="width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:12px;font-family:inherit;resize:none;outline:none;color:var(--text);background:#fff;transition:.2s;"
+                onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+                placeholder="Describe el contrato: qué servicios/productos, con qué agencia, plazo de ejecución..."></textarea>
+            </div>
+
+            <!-- Preview calc -->
+            <div id="alliance-preview" style="display:none;background:linear-gradient(135deg,#eef2ff,#fff);border:1px solid #c7d2fe;border-radius:8px;padding:12px;">
+              <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:8px;">RESUMEN ESTIMADO</div>
+              <div id="alliance-preview-content" style="font-size:11px;color:var(--text);line-height:2;"></div>
+            </div>
+
+            <!-- Error / Success -->
+            <div id="alliance-error" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;color:#b91c1c;font-size:11px;"></div>
+            <div id="alliance-success" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:16px;text-align:center;">
+              <div style="font-size:28px;margin-bottom:6px;">✅</div>
+              <div style="font-size:13px;font-weight:800;color:#15803d;margin-bottom:4px;">¡Solicitud Enviada!</div>
+              <div style="font-size:11px;color:#6b7a99;line-height:1.6;">El equipo de GovBidder revisará tu solicitud<br>y te contactará en <strong>24–48 horas</strong>.</div>
+            </div>
+
+            <button id="alliance-submit-btn" onclick="submitAllianceApp()"
+              style="background:linear-gradient(135deg,var(--accent),#a01e1d);color:#fff;border:none;border-radius:8px;padding:12px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(228,45,44,.25);transition:.2s;"
+              onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+              <span id="alliance-submit-txt">🤝 Enviar Solicitud Alliance →</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Info pills -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+          <span style="background:#dcfce7;color:#15803d;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">✅ Sin historial crediticio requerido</span>
+          <span style="background:#dbeafe;color:#1d4ed8;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">📋 Solo necesitas la PO</span>
+          <span style="background:#fef3c7;color:#92400e;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">⚡ Respuesta en 24-48 hrs</span>
+          <span style="background:#f3e8ff;color:#7e22ce;font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:20px;">🤝 Fee: 20% de ganancia neta</span>
+        </div>
+      </div>
+
     </div>
 
     <!-- TOOLS -->
@@ -2259,6 +2371,99 @@ function searchCompetitorsInState(state, naics) {
   document.getElementById('comp-naics').value = naics;
   document.querySelector('[onclick*="\'compete\'"]').click();
   setTimeout(() => fetchCompetitors(), 300);
+}
+
+// ── ALLIANCE APPLICATION ─────────────────────────────────
+// Live preview when PO or cost changes
+['alliance-po','alliance-cost'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updateAlliancePreview);
+});
+
+function updateAlliancePreview() {
+  const po   = parseFloat(document.getElementById('alliance-po')?.value)   || 0;
+  const cost = parseFloat(document.getElementById('alliance-cost')?.value) || 0;
+  const prev = document.getElementById('alliance-preview');
+  const cont = document.getElementById('alliance-preview-content');
+  if (!po || !cost || !prev || !cont) { if (prev) prev.style.display = 'none'; return; }
+
+  const apoyo   = cost * 0.9;
+  const tuParte = cost * 0.1;
+  const ganancia = po - cost;
+  const fee     = ganancia * 0.2;
+  const neta    = ganancia - fee;
+
+  prev.style.display = 'block';
+  cont.innerHTML = `
+    💰 Valor PO: <strong>$${po.toLocaleString()}</strong><br>
+    🏦 GovBidder aporta (90%): <strong style="color:var(--blue)">$${apoyo.toLocaleString()}</strong><br>
+    👤 Tu aporte (10%): <strong>$${tuParte.toLocaleString()}</strong><br>
+    📈 Ganancia bruta: <strong>$${ganancia.toLocaleString()}</strong><br>
+    🤝 Fee Alliance (20%): $${fee.toLocaleString()}<br>
+    <strong style="color:var(--green)">✅ Tu utilidad neta: $${neta.toLocaleString()}</strong>`;
+}
+
+async function submitAllianceApp() {
+  const name    = (document.getElementById('alliance-name')?.value    || '').trim();
+  const company = (document.getElementById('alliance-company')?.value || '').trim();
+  const po      = (document.getElementById('alliance-po')?.value      || '').trim();
+  const cost    = (document.getElementById('alliance-cost')?.value    || '').trim();
+  const status  = (document.getElementById('alliance-status')?.value  || '').trim();
+  const desc    = (document.getElementById('alliance-desc')?.value    || '').trim();
+
+  const errEl  = document.getElementById('alliance-error');
+  const succEl = document.getElementById('alliance-success');
+  const btn    = document.getElementById('alliance-submit-btn');
+  const btnTxt = document.getElementById('alliance-submit-txt');
+
+  if (errEl)  errEl.style.display  = 'none';
+  if (succEl) succEl.style.display = 'none';
+
+  if (!name || !company || !po || !cost || !status || !desc) {
+    if (errEl) { errEl.textContent = 'Por favor completa todos los campos requeridos.'; errEl.style.display = 'block'; }
+    return;
+  }
+
+  if (btn)    btn.disabled    = true;
+  if (btnTxt) btnTxt.innerHTML = 'Enviando solicitud...';
+
+  const poNum   = parseFloat(po)   || 0;
+  const costNum = parseFloat(cost) || 0;
+  const apoyo   = (costNum * 0.9).toLocaleString();
+  const neta    = ((poNum - costNum) * 0.8).toLocaleString();
+  const memberEmail = currentMember?.email || 'No disponible';
+  const memberPlan  = currentMember?.plan  || 'No disponible';
+
+  try {
+    const res  = await fetch('/api/auth?action=alliance', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name, company, po, cost, status, desc, memberEmail, memberPlan, apoyo, neta })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      if (succEl) succEl.style.display = 'block';
+      if (btn)    btn.style.display    = 'none';
+      // Clear form
+      ['alliance-name','alliance-company','alliance-po','alliance-cost','alliance-desc'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const st = document.getElementById('alliance-status');
+      if (st) st.value = '';
+      const prev = document.getElementById('alliance-preview');
+      if (prev) prev.style.display = 'none';
+    } else {
+      if (errEl) { errEl.textContent = data.error || 'Error enviando solicitud.'; errEl.style.display = 'block'; }
+      if (btn)    btn.disabled    = false;
+      if (btnTxt) btnTxt.innerHTML = '🤝 Enviar Solicitud Alliance →';
+    }
+  } catch(e) {
+    if (errEl) { errEl.textContent = 'Error de conexión: ' + e.message; errEl.style.display = 'block'; }
+    if (btn)    btn.disabled    = false;
+    if (btnTxt) btnTxt.innerHTML = '🤝 Enviar Solicitud Alliance →';
+  }
 }
 
 // ── MISC ─────────────────────────────────────────────────
